@@ -30,14 +30,13 @@ import {
   ChevronRight,
   Quote,
 } from 'lucide-react';
-import { formatCurrency, calculateDaysRemaining } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 import { PlanovaStore } from '@/lib/storage';
 import { CompletedEventReview } from '@/types';
 
 export default function LandingPage() {
   const router = useRouter();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [demoTab, setDemoTab] = useState<'theme' | 'budget' | 'schedule'>('theme');
   const [isAuth, setIsAuth] = useState(false);
   const [previousWorks, setPreviousWorks] = useState<CompletedEventReview[]>([]);
   const [activeModalWork, setActiveModalWork] = useState<CompletedEventReview | null>(null);
@@ -54,17 +53,6 @@ export default function LandingPage() {
       router.push('/auth/sign-in?redirect=/events/new');
     }
   };
-
-  const previewEvent = {
-    title: "Rohan & Ananya's Royal Palace Wedding",
-    location: "Jai Mahal Palace, Jaipur",
-    date: "2026-12-18",
-    budget: 2500000,
-    spent: 1575000,
-    guests: 350,
-  };
-
-  const daysLeft = calculateDaysRemaining(previewEvent.date);
 
   return (
     <div className="relative overflow-hidden">
@@ -131,247 +119,19 @@ export default function LandingPage() {
                 <span>Plan My Event</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"}
+              <a
+                href="#previous-works"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold text-slate-700 bg-white border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] shadow-card transition-all"
               >
-                <span>Explore Live Workspace</span>
-                <ExternalLink className="w-4 h-4 text-slate-400" />
-              </Link>
+                <span>View Our Previous Works</span>
+                <ArrowRight className="w-4 h-4 text-slate-400" />
+              </a>
             </motion.div>
 
             <p className="mt-4 text-xs font-medium text-slate-500 tracking-wide">
               "Every Great Moment Starts with a Plan." • Login required to create your event
             </p>
           </div>
-
-          {/* INTERACTIVE EVENT-PLANNING PREVIEW WIDGET */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-14 max-w-5xl mx-auto rounded-3xl glass-panel p-5 sm:p-7 lg:p-8 shadow-2xl border border-indigo-100 relative"
-          >
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between pb-6 border-b border-slate-200/70 gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700">
-                    Featured Master Plan
-                  </span>
-                  <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                    <Calendar className="w-3.5 h-3.5 text-violet-600" /> Dec 18, 2026
-                  </span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5">
-                  {previewEvent.title}
-                </h3>
-                <p className="text-xs text-slate-500 font-medium">{previewEvent.location} • {previewEvent.guests} Guests</p>
-              </div>
-
-              {/* Countdown badge */}
-              <div className="flex items-center gap-3 bg-gradient-to-r from-indigo-50/80 to-violet-50/80 p-3 px-5 rounded-2xl border border-indigo-100">
-                <div className="text-center">
-                  <span className="text-2xl font-black text-indigo-700">{daysLeft}</span>
-                  <span className="block text-[10px] uppercase font-bold text-slate-400">Days To Go</span>
-                </div>
-                <div className="h-8 w-px bg-indigo-200/60"></div>
-                <div>
-                  <span className="text-xs font-bold text-slate-700 block">Status: Planning</span>
-                  <span className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 68% Prepared
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Interactive Tab bar */}
-            <div className="flex items-center gap-2 my-5 border-b border-slate-200/70 pb-3 overflow-x-auto">
-              <button
-                onClick={() => setDemoTab('theme')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                  demoTab === 'theme'
-                    ? 'bg-indigo-700 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <Palette className="w-3.5 h-3.5" />
-                Theme & Atmosphere
-              </button>
-              <button
-                onClick={() => setDemoTab('budget')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                  demoTab === 'budget'
-                    ? 'bg-indigo-700 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <PieChart className="w-3.5 h-3.5" />
-                Budget & Reserve Tracker
-              </button>
-              <button
-                onClick={() => setDemoTab('schedule')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                  demoTab === 'schedule'
-                    ? 'bg-indigo-700 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                Production Milestones
-              </button>
-            </div>
-
-            {/* Tab 1: Theme Concept */}
-            {demoTab === 'theme' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div className="md:col-span-2 space-y-4">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    Atmospheric Direction
-                  </div>
-                  <h4 className="text-lg font-extrabold text-slate-900">
-                    Royal Rajputana Oasis & Starry Night Canopy
-                  </h4>
-                  <p className="text-sm text-slate-600 leading-relaxed font-normal">
-                    Opulent heritage grandeur blended with understated modern elegance. Deep indigo velvet drapery
-                    punctuated by antique brass urns, fragrant marigold garlands, and ambient warm amber uplighting
-                    under Jaipur’s open evening sky.
-                  </p>
-                  <div>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                      Curated Color Palette
-                    </span>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#4338CA] shadow-sm"></div>
-                        <span className="text-xs font-medium text-slate-600">Deep Indigo</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#7C3AED] shadow-sm"></div>
-                        <span className="text-xs font-medium text-slate-600">Electric Violet</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#D97706] shadow-sm"></div>
-                        <span className="text-xs font-medium text-slate-600">Antique Gold</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#FDF2F8] border border-slate-200 shadow-sm"></div>
-                        <span className="text-xs font-medium text-slate-600">Rose Mist</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative h-48 md:h-56 rounded-2xl overflow-hidden shadow-md">
-                  <Image
-                    src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80"
-                    alt="Royal Wedding Decor Preview"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3">
-                    <span className="text-xs text-white font-medium">Jai Mahal Palace Grounds</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Tab 2: Budget */}
-            {demoTab === 'budget' && (
-              <div className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                    <span className="text-xs text-slate-500 font-medium">Total Planned Budget</span>
-                    <p className="text-xl font-black text-slate-900 mt-1">{formatCurrency(previewEvent.budget, 'INR')}</p>
-                    <span className="text-[11px] text-slate-400">Strict mode enabled</span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                    <span className="text-xs text-slate-500 font-medium">Committed & Spent</span>
-                    <p className="text-xl font-black text-indigo-700 mt-1">{formatCurrency(previewEvent.spent, 'INR')}</p>
-                    <span className="text-[11px] text-indigo-600 font-medium">63% of planned allocation</span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                    <span className="text-xs text-slate-500 font-medium">Emergency Reserve (8%)</span>
-                    <p className="text-xl font-black text-emerald-600 mt-1">{formatCurrency(200000, 'INR')}</p>
-                    <span className="text-[11px] text-emerald-600 font-medium">100% Unspent & Safeguarded</span>
-                  </div>
-                </div>
-
-                {/* Progress bar with aesthetic gradient */}
-                <div>
-                  <div className="flex justify-between text-xs font-semibold text-slate-600 mb-1.5">
-                    <span>Spending vs Budget Target</span>
-                    <span>{formatCurrency(previewEvent.spent, 'INR')} / {formatCurrency(previewEvent.budget, 'INR')}</span>
-                  </div>
-                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-600 via-violet-500 to-amber-400 transition-all duration-1000"
-                      style={{ width: `${(previewEvent.spent / previewEvent.budget) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Tab 3: Schedule */}
-            {demoTab === 'schedule' && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                    <div>
-                      <h5 className="text-sm font-bold text-slate-400 line-through">
-                        Finalize Palace Venue Booking & Stage Layout
-                      </h5>
-                      <span className="text-xs text-slate-400">Completed on Sep 15</span>
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold text-slate-500">Venue</span>
-                </div>
-
-                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full border-2 border-indigo-600 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></div>
-                    </div>
-                    <div>
-                      <h5 className="text-sm font-bold text-slate-900">
-                        Dispatch Royal E-Invites with RSVP Tracking
-                      </h5>
-                      <span className="text-xs text-amber-600 font-semibold">Due in 5 days (Nov 10)</span>
-                    </div>
-                  </div>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800">Priority</span>
-                </div>
-
-                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full border-2 border-slate-300"></div>
-                    <div>
-                      <h5 className="text-sm font-bold text-slate-900">
-                        Coordinate Jaipur Airport Chauffeur Shuttles
-                      </h5>
-                      <span className="text-xs text-slate-500">Scheduled for Dec 05</span>
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold text-slate-500">Logistics</span>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between">
-              <span className="text-xs text-slate-500">
-                Want to customize this celebration or create your own?
-              </span>
-              <Link
-                href={isAuth ? "/events/evt_royal_wedding/plan" : "/auth/sign-in?redirect=/events/evt_royal_wedding/plan"}
-                className="text-xs font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 group"
-              >
-                <span>Open Full Master Plan</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-          </motion.div>
         </div>
       </section>
 
@@ -898,12 +658,13 @@ export default function LandingPage() {
             >
               Start Planning Now
             </Link>
-            <Link
-              href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-900/40 text-white border border-white/20 font-bold text-sm hover:bg-indigo-900/60 transition"
+            <a
+              href="#previous-works"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-900/40 text-white border border-white/20 font-bold text-sm hover:bg-indigo-900/60 transition inline-flex items-center justify-center gap-2"
             >
-              View Sample Workspaces
-            </Link>
+              <span>Explore Previous Works</span>
+              <ArrowRight className="w-4 h-4 text-violet-200" />
+            </a>
           </div>
         </div>
       </section>
