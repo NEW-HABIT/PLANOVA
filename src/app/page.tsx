@@ -25,18 +25,27 @@ import {
   ExternalLink,
   Award,
   Sparkle,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
 } from 'lucide-react';
 import { formatCurrency, calculateDaysRemaining } from '@/lib/utils';
 import { PlanovaStore } from '@/lib/storage';
+import { CompletedEventReview } from '@/types';
 
 export default function LandingPage() {
   const router = useRouter();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [demoTab, setDemoTab] = useState<'theme' | 'budget' | 'schedule'>('theme');
   const [isAuth, setIsAuth] = useState(false);
+  const [previousWorks, setPreviousWorks] = useState<CompletedEventReview[]>([]);
+  const [activeModalWork, setActiveModalWork] = useState<CompletedEventReview | null>(null);
+  const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
 
   useEffect(() => {
     setIsAuth(PlanovaStore.isAuthenticated());
+    setPreviousWorks(PlanovaStore.getPreviousWorks());
   }, []);
 
   const handlePlanMyEventClick = (e: React.MouseEvent) => {
@@ -56,69 +65,6 @@ export default function LandingPage() {
   };
 
   const daysLeft = calculateDaysRemaining(previewEvent.date);
-
-  const previousWorks = [
-    {
-      title: "Rohan & Ananya's Royal Palace Wedding",
-      category: "Destination Wedding",
-      location: "Jai Mahal Palace, Jaipur",
-      guests: 350,
-      budget: "₹25,00,000",
-      image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
-      highlight: "Delivered 100% on budget with zero contingency leak and 4.9★ vendor satisfaction.",
-      tag: "Royal Heritage",
-    },
-    {
-      title: "TechPulse Global AI & Cloud Summit",
-      category: "Corporate Keynote & Gala",
-      location: "Grand Hyatt, Mumbai",
-      guests: 600,
-      budget: "₹18,00,000",
-      image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80",
-      highlight: "Orchestrated 2 stages, 6 keynote sessions, and 100% dietary personalized banquet.",
-      tag: "Global Summit",
-    },
-    {
-      title: "Aarav's 10th Intergalactic Superhero Birthday",
-      category: "Kids Milestone Birthday",
-      location: "Meadowlands Lawn, Bengaluru",
-      guests: 45,
-      budget: "₹85,000",
-      image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=800&q=80",
-      highlight: "Custom cosmic decor, 3-tier cake, and live illusionist with rave guest reviews.",
-      tag: "Milestone Celebration",
-    },
-    {
-      title: "AURA National Cultural Festival",
-      category: "College Festival & Concert",
-      location: "Main University Arena, New Delhi",
-      guests: 2500,
-      budget: "₹12,00,000",
-      image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
-      highlight: "Crowd management for 2,500+ attendees, multi-artist line-up, and vendor stalls.",
-      tag: "Youth Festival",
-    },
-    {
-      title: "Diya & Kabir's Sunset Vineyard Anniversary",
-      category: "Silver Anniversary Soirée",
-      location: "Sula Vineyards, Nashik",
-      guests: 75,
-      budget: "₹3,50,000",
-      image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
-      highlight: "Candlelit pergolas, artisanal wine pairing dinner, and live acoustic quartet.",
-      tag: "Romantic Elegance",
-    },
-    {
-      title: "Vasant Utsav Community Spring Gala",
-      category: "Community Gala",
-      location: "Koramangala Club, Bengaluru",
-      guests: 400,
-      budget: "₹4,20,000",
-      image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=800&q=80",
-      highlight: "Eco-friendly floral installations, local artisan food kiosks, and charity auction.",
-      tag: "Cultural Harmony",
-    },
-  ];
 
   return (
     <div className="relative overflow-hidden">
@@ -430,7 +376,7 @@ export default function LandingPage() {
       </section>
 
       {/* 2. OUR PREVIOUS WORKS SECTION (Showcase of Real Celebrations) */}
-      <section id="our-works" className="py-20 bg-white border-y border-slate-200/60">
+      <section id="previous-works" className="py-20 bg-white border-y border-slate-200/60 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-xs font-bold uppercase tracking-wider text-violet-700 bg-violet-100/70 px-3.5 py-1.5 rounded-full">
@@ -440,53 +386,73 @@ export default function LandingPage() {
               Our Previous Works
             </h2>
             <p className="text-slate-600 mt-2 text-sm sm:text-base">
-              Explore how PLANOVA brought weddings, corporate summits, milestone parties, and cultural festivals to life with flawless precision.
+              Click any celebration to view high-resolution event galleries, verified owner reviews, and real financial savings.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {previousWorks.map((work, idx) => (
               <div
-                key={idx}
-                className="rounded-3xl overflow-hidden bg-[#FAFAFF] border border-slate-200/80 shadow-card hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                key={work.id || idx}
+                onClick={() => {
+                  setActiveModalWork(work);
+                  setActivePhotoIdx(0);
+                }}
+                className="rounded-3xl overflow-hidden bg-white border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
               >
-                <div className="relative h-52 w-full overflow-hidden">
+                {/* Image Header with Pills */}
+                <div className="relative h-60 w-full overflow-hidden bg-slate-900">
                   <Image
-                    src={work.image}
+                    src={work.gallery_images?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80'}
                     alt={work.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-indigo-900 text-[11px] font-bold backdrop-blur-sm shadow-sm">
-                    {work.tag}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-black/20 to-black/10 pointer-events-none" />
+
+                  {/* Top-Left Category / Theme Tag Pill */}
+                  <div className="absolute top-3.5 left-3.5 px-3.5 py-1 rounded-full bg-white text-slate-900 text-xs font-bold shadow-md tracking-tight">
+                    {work.tag || work.category}
                   </div>
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
-                    <span className="font-semibold">{work.location}</span>
-                    <span className="font-bold text-amber-300">{work.budget}</span>
+
+                  {/* Top-Right Photo Count Indicator */}
+                  <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-bold backdrop-blur-sm flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-300" />
+                    <span>{work.gallery_images?.length || 1} Photos</span>
+                  </div>
+
+                  {/* Bottom info on image: Location & Budget */}
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white text-xs drop-shadow">
+                    <span className="font-bold truncate max-w-[65%]">{work.location}</span>
+                    <span className="font-extrabold text-amber-300 shrink-0">{work.budget}</span>
                   </div>
                 </div>
 
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                {/* Card Content Matching Exact Provided Screenshot */}
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider">
+                    <span className="text-[11px] font-bold text-indigo-600 tracking-wider uppercase block">
                       {work.category}
                     </span>
-                    <h4 className="text-base font-extrabold text-slate-900 mt-1 leading-snug">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1 leading-snug group-hover:text-indigo-600 transition-colors">
                       {work.title}
-                    </h4>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                      {work.highlight}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-2 leading-relaxed line-clamp-2">
+                      {work.highlight || work.owner_review}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-medium">
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-slate-400" /> {work.guests} Guests
-                    </span>
-                    <span className="flex items-center gap-1 text-emerald-600 font-bold">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Executed Flawlessly
-                    </span>
+                  {/* Divider and Footer: Guest Count & Status */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <Users className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{work.guests} Guests</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 font-bold text-emerald-600">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span>Executed Flawlessly</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -499,12 +465,216 @@ export default function LandingPage() {
               onClick={handlePlanMyEventClick}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md transition"
             >
+              <Sparkles className="w-4 h-4 text-amber-300" />
               <span>Create Your Event Blueprint</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
+
+      {/* INTERACTIVE PREVIOUS WORK MODAL (Animated Photo Gallery & Owner Review) */}
+      {activeModalWork && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setActiveModalWork(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 my-auto animate-in zoom-in-95 duration-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-4 bg-gradient-to-r from-slate-50 via-white to-indigo-50/40">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700">
+                    {activeModalWork.tag || activeModalWork.category}
+                  </span>
+                  <span className="text-xs text-slate-500 font-medium">
+                    {activeModalWork.location}
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {activeModalWork.title}
+                </h3>
+              </div>
+
+              <button
+                onClick={() => setActiveModalWork(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Main Active Photo with navigation and animation */}
+            <div className="relative h-64 sm:h-84 md:h-96 w-full bg-slate-900 overflow-hidden">
+              <motion.div
+                key={activePhotoIdx}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="relative w-full h-full"
+              >
+                <Image
+                  src={
+                    activeModalWork.gallery_images?.[activePhotoIdx] ||
+                    activeModalWork.gallery_images?.[0] ||
+                    'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80'
+                  }
+                  alt={activeModalWork.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+
+              {/* Prev / Next Controls */}
+              {activeModalWork.gallery_images && activeModalWork.gallery_images.length > 1 && (
+                <>
+                  <button
+                    onClick={() =>
+                      setActivePhotoIdx((prev) =>
+                        prev === 0 ? activeModalWork.gallery_images.length - 1 : prev - 1
+                      )
+                    }
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/90 active:scale-95 transition backdrop-blur-sm z-10"
+                    title="Previous Photo"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setActivePhotoIdx((prev) =>
+                        prev === activeModalWork.gallery_images.length - 1 ? 0 : prev + 1
+                      )
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/90 active:scale-95 transition backdrop-blur-sm z-10"
+                    title="Next Photo"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Photo position badge */}
+              <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/70 text-white text-[11px] font-bold backdrop-blur-sm z-10">
+                Photo {activePhotoIdx + 1} of {activeModalWork.gallery_images?.length || 1}
+              </div>
+            </div>
+
+            {/* Thumbnail selector strip */}
+            {activeModalWork.gallery_images && activeModalWork.gallery_images.length > 1 && (
+              <div className="flex items-center gap-2 p-3 bg-slate-50 border-b border-slate-100 overflow-x-auto">
+                {activeModalWork.gallery_images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActivePhotoIdx(i)}
+                    className={`relative w-16 h-12 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
+                      activePhotoIdx === i
+                        ? 'border-indigo-600 scale-105 shadow-md ring-2 ring-indigo-200'
+                        : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <Image src={img} alt="Thumbnail" fill className="object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Event Metrics & Owner Review Details */}
+            <div className="p-5 sm:p-6 space-y-5">
+              {/* Event Metrics Badges */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-center">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Budget</span>
+                  <span className="text-sm font-black text-indigo-900">{activeModalWork.budget}</span>
+                </div>
+                <div className="p-3 rounded-2xl bg-violet-50/70 border border-violet-100 text-center">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Attendance</span>
+                  <span className="text-sm font-black text-violet-900">{activeModalWork.guests} Guests</span>
+                </div>
+                <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100 text-center">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Execution Outcome</span>
+                  <span className="text-sm font-black text-emerald-800">100% On-Budget</span>
+                </div>
+              </div>
+
+              {/* Owner Testimonial Card: "How PLANOVA Helped" */}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-sm relative shadow-sm">
+                      {activeModalWork.owner_avatar ? (
+                        <Image
+                          src={activeModalWork.owner_avatar}
+                          alt={activeModalWork.owner_name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span>{activeModalWork.owner_name?.charAt(0) || 'H'}</span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">{activeModalWork.owner_name}</h4>
+                      <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Verified Celebration Host
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">
+                    {[...Array(activeModalWork.rating || 5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="relative pt-1">
+                  <Quote className="w-5 h-5 text-indigo-300 absolute -top-1 -left-1 opacity-40" />
+                  <p className="text-xs sm:text-sm text-slate-700 pl-5 leading-relaxed font-normal">
+                    {activeModalWork.owner_review}
+                  </p>
+                </div>
+
+                {activeModalWork.savings_achieved && (
+                  <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Financial Impact:</span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">
+                      {activeModalWork.savings_achieved}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom CTA in modal */}
+              <div className="flex items-center justify-between pt-2">
+                <button
+                  onClick={() => setActiveModalWork(null)}
+                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800"
+                >
+                  Close Gallery
+                </button>
+                <Link
+                  href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
+                  onClick={(e) => {
+                    setActiveModalWork(null);
+                    handlePlanMyEventClick(e);
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md transition"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Plan My Celebration Like This</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 3. HOW PLANOVA WORKS IN 3 STEPS */}
       <section className="py-20 bg-slate-50">

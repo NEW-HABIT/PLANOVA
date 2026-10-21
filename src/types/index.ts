@@ -194,6 +194,25 @@ export interface AIMessageItem {
   created_at: string;
 }
 
+export interface CompletedEventReview {
+  id: string;
+  event_id?: string;
+  title: string;
+  category: string;
+  tag?: string;
+  location: string;
+  budget: string;
+  guests: number;
+  owner_name: string;
+  owner_avatar?: string;
+  owner_review: string;
+  rating: number; // 1-5
+  savings_achieved?: string;
+  highlight?: string;
+  gallery_images: string[];
+  created_at: string;
+}
+
 export interface GeneratedPlan {
   overview: string;
   theme_concept: {

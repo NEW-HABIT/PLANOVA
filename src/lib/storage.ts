@@ -10,6 +10,7 @@ import {
   CreativeAssetItem,
   AIMessageItem,
   UserProfile,
+  CompletedEventReview,
 } from "@/types";
 import {
   DEMO_USER,
@@ -35,6 +36,7 @@ const STORAGE_KEYS = {
   CREATIVE_ASSETS: "planova_creative_assets",
   AI_MESSAGES: "planova_ai_messages",
   COOKIE_CONSENT: "planova_cookie_consent",
+  PREVIOUS_WORKS: "planova_previous_works",
 };
 
 function safeGet<T>(key: string, defaultValue: T): T {
@@ -375,4 +377,179 @@ export const PlanovaStore = {
     safeSet(STORAGE_KEYS.AI_MESSAGES, all);
     return newMsg;
   },
+
+  // Previous Works & Completed Reviews
+  getPreviousWorks(): CompletedEventReview[] {
+    const saved = safeGet<CompletedEventReview[]>(STORAGE_KEYS.PREVIOUS_WORKS, []);
+    if (!saved || saved.length === 0) {
+      safeSet(STORAGE_KEYS.PREVIOUS_WORKS, INITIAL_PREVIOUS_WORKS);
+      return INITIAL_PREVIOUS_WORKS;
+    }
+    return saved;
+  },
+
+  submitEventReview(review: Omit<CompletedEventReview, "id" | "created_at">): CompletedEventReview {
+    const works = this.getPreviousWorks();
+    const newWork: CompletedEventReview = {
+      ...review,
+      id: `work_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    works.unshift(newWork);
+    safeSet(STORAGE_KEYS.PREVIOUS_WORKS, works);
+
+    // If linked to an active event, mark it as completed
+    if (review.event_id) {
+      const evt = this.getEventById(review.event_id);
+      if (evt) {
+        this.saveEvent({
+          ...evt,
+          status: "completed",
+          progress_percentage: 100,
+        });
+      }
+    }
+
+    return newWork;
+  },
 };
+
+export const INITIAL_PREVIOUS_WORKS: CompletedEventReview[] = [
+  {
+    id: "work_royal_wedding",
+    event_id: "evt_royal_wedding",
+    title: "Rohan & Ananya's Royal Palace Wedding",
+    category: "Destination Wedding",
+    tag: "Royal Heritage",
+    location: "Jai Mahal Palace, Jaipur",
+    budget: "₹25,00,000",
+    guests: 350,
+    highlight: "Delivered 100% on budget with zero contingency leak and 4.9★ vendor satisfaction.",
+    owner_name: "Rohan & Ananya Verma",
+    owner_avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    owner_review:
+      "PLANOVA transformed what felt like an impossible 3-day royal wedding into the most peaceful and breathtaking weekend of our lives. The smart budget manager kept our catering and venue costs exactly on target, and the Emergency Reserve stayed completely untouched! Our 350 guests couldn't stop raving about the live chaat counters and the seamless schedule.",
+    rating: 5,
+    savings_achieved: "₹3,40,000 Saved via Vendor Optimization",
+    gallery_images: [
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80",
+    ],
+    created_at: new Date(Date.now() - 12 * 86400000).toISOString(),
+  },
+  {
+    id: "work_tech_summit",
+    event_id: "evt_tech_summit",
+    title: "TechPulse Global AI & Cloud Summit",
+    category: "Corporate Keynote & Gala",
+    tag: "Global Summit",
+    location: "Grand Hyatt, Mumbai",
+    budget: "₹18,00,000",
+    guests: 600,
+    highlight: "Orchestrated 2 stages, 6 keynote sessions, and 100% dietary personalized banquet.",
+    owner_name: "Tanvi Deshmukh (VP Events)",
+    owner_avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80",
+    owner_review:
+      "Executing a 600-person tech summit with simultaneous breakout rooms and live international keynotes was daunting. PLANOVA's minute-by-minute cue sheet generator gave our audiovisual technicians and stage crew clarity down to the second. Flawless execution and zero AV hiccups.",
+    rating: 5,
+    savings_achieved: "₹2,10,000 Saved on Consolidated AV Packages",
+    gallery_images: [
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80",
+    ],
+    created_at: new Date(Date.now() - 25 * 86400000).toISOString(),
+  },
+  {
+    id: "work_kids_birthday",
+    event_id: "evt_kids_birthday",
+    title: "Aarav's 10th Intergalactic Superhero Birthday",
+    category: "Kids Milestone Birthday",
+    tag: "Milestone Celebration",
+    location: "Meadowlands Lawn, Bengaluru",
+    budget: "₹85,000",
+    guests: 45,
+    highlight: "Custom cosmic decor, 3-tier cake, and live illusionist with rave guest reviews.",
+    owner_name: "Pooja Sharma",
+    owner_avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+    owner_review:
+      "Aarav declared this 'the best birthday in the universe'! The cosmic balloon arch, 3-tier rocket cake, and VR illusionist were booked through PLANOVA's vendor directory with complete price transparency. We finished under budget with ₹7,000 to spare for goodie bags!",
+    rating: 5,
+    savings_achieved: "Under Budget by ₹7,000",
+    gallery_images: [
+      "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1000&q=80",
+    ],
+    created_at: new Date(Date.now() - 40 * 86400000).toISOString(),
+  },
+  {
+    id: "work_college_fest",
+    event_id: "evt_college_fest",
+    title: "AURA National Cultural Festival",
+    category: "College Festival & Concert",
+    tag: "Youth Festival",
+    location: "Main University Arena, New Delhi",
+    budget: "₹12,00,000",
+    guests: 2500,
+    highlight: "Crowd management for 2,500+ attendees, multi-artist line-up, and vendor stalls.",
+    owner_name: "Devrath Banerjee (Fest Convenor)",
+    owner_avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    owner_review:
+      "Managing 2,500 students, celebrity artist riders, stage sound clearance, and 30 vendor stalls felt terrifying until we put the plan in PLANOVA. The backwards milestone schedule kept our 40-student volunteer committee perfectly coordinated.",
+    rating: 5,
+    savings_achieved: "₹1,80,000 Saved on Stage Rigging & Truss",
+    gallery_images: [
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1000&q=80",
+    ],
+    created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+  },
+  {
+    id: "work_vineyard_anniversary",
+    title: "Diya & Kabir's Sunset Vineyard Anniversary",
+    category: "Silver Anniversary Soirée",
+    tag: "Romantic Elegance",
+    location: "Sula Vineyards, Nashik",
+    budget: "₹3,50,000",
+    guests: 75,
+    highlight: "Candlelit pergolas, artisanal wine pairing dinner, and live acoustic quartet.",
+    owner_name: "Diya & Kabir Mehra",
+    owner_avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    owner_review:
+      "For our 25th anniversary, we wanted a sunset wine tasting followed by an intimate candlelit dinner. PLANOVA helped us write the personal toast speech, design bilingual digital invites with RSVP links, and negotiate a fantastic deal with the vineyard banqueting team.",
+    rating: 5,
+    savings_achieved: "₹45,000 Saved on Estate Wine Pairing",
+    gallery_images: [
+      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1000&q=80",
+    ],
+    created_at: new Date(Date.now() - 75 * 86400000).toISOString(),
+  },
+  {
+    id: "work_community_gala",
+    title: "Vasant Utsav Community Spring Gala",
+    category: "Community Gala",
+    tag: "Cultural Harmony",
+    location: "Koramangala Club, Bengaluru",
+    budget: "₹4,20,000",
+    guests: 400,
+    highlight: "Eco-friendly floral installations, local artisan food kiosks, and charity auction.",
+    owner_name: "Vikram Rathore (President)",
+    owner_avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    owner_review:
+      "We hosted over 400 community members for our spring charitable feast. PLANOVA made it so simple to track vegetarian and Jain dietary preferences and export the guest list directly for the registration desk. Highly recommended for community groups!",
+    rating: 5,
+    savings_achieved: "100% On-Target Financial Transparency",
+    gallery_images: [
+      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=1000&q=80",
+    ],
+    created_at: new Date(Date.now() - 90 * 86400000).toISOString(),
+  },
+];

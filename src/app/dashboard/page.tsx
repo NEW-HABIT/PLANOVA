@@ -27,6 +27,7 @@ import { PlanovaStore } from '@/lib/storage';
 import { EventItem, EventCategory, EventStatus } from '@/types';
 import { formatCurrency, formatDate, calculateDaysRemaining } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import CompleteEventReviewModal from '@/components/events/CompleteEventReviewModal';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [completingEvent, setCompletingEvent] = useState<EventItem | null>(null);
 
   useEffect(() => {
     const authStatus = PlanovaStore.isAuthenticated();
@@ -286,7 +288,18 @@ export default function DashboardPage() {
                     </button>
 
                     {activeMenuId === evt.id && (
-                      <div className="absolute right-0 mt-1 w-36 rounded-xl bg-white border border-slate-200 shadow-xl py-1 z-20 text-xs">
+                      <div className="absolute right-0 mt-1 w-44 rounded-xl bg-white border border-slate-200 shadow-xl py-1 z-20 text-xs">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCompletingEvent(evt);
+                            setActiveMenuId(null);
+                          }}
+                          className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-amber-50 text-amber-800 font-medium"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                          <span>{evt.status === 'completed' ? 'Update Story & Photos' : 'Complete & Submit Review'}</span>
+                        </button>
                         <button
                           onClick={(e) => handleDuplicate(evt.id, e)}
                           className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-slate-50 text-slate-700"
@@ -355,7 +368,31 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Actions Bar */}
-                  <div className="pt-2">
+                  <div className="pt-2 space-y-2">
+                    {evt.status === 'completed' ? (
+                      <div className="flex items-center justify-between text-xs py-1 px-1">
+                        <span className="text-emerald-700 font-bold flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Executed Flawlessly
+                        </span>
+                        <Link href="/#previous-works" className="text-indigo-700 font-bold hover:underline">
+                          Showcase →
+                        </Link>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setCompletingEvent(evt);
+                        }}
+                        className="w-full py-2 px-3 rounded-xl text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 flex items-center justify-center gap-1.5 transition shadow-xs active:scale-95"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Complete Event & Submit Review</span>
+                      </button>
+                    )}
+
                     <Link
                       href={`/events/${evt.id}/plan`}
                       className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 flex items-center justify-center gap-2 group-hover:bg-indigo-700 group-hover:text-white transition-all shadow-sm"
@@ -369,6 +406,18 @@ export default function DashboardPage() {
             );
           })}
         </div>
+      )}
+
+      {/* Complete Event Review Modal */}
+      {completingEvent && (
+        <CompleteEventReviewModal
+          event={completingEvent}
+          isOpen={!!completingEvent}
+          onClose={() => setCompletingEvent(null)}
+          onSuccess={() => {
+            setEvents(PlanovaStore.getEvents());
+          }}
+        />
       )}
     </div>
   );

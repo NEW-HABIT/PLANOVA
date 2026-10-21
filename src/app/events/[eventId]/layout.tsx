@@ -18,12 +18,14 @@ import {
   Bot,
   FileText,
   Clock,
+  CheckCircle2,
 } from 'lucide-react';
 import { PlanovaStore } from '@/lib/storage';
 import { EventItem } from '@/types';
 import { formatDate, calculateDaysRemaining, formatCurrency } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { Lock } from 'lucide-react';
+import CompleteEventReviewModal from '@/components/events/CompleteEventReviewModal';
 
 export default function EventWorkspaceLayout({
   children,
@@ -37,6 +39,7 @@ export default function EventWorkspaceLayout({
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [event, setEvent] = useState<EventItem | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   useEffect(() => {
     const authStatus = PlanovaStore.isAuthenticated();
@@ -120,13 +123,37 @@ export default function EventWorkspaceLayout({
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
             </Link>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-violet-500/80 text-white backdrop-blur-md">
                 {event.category.replace('_', ' ')}
               </span>
-              <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-md">
-                {daysRemaining < 0 ? 'Completed' : `${daysRemaining} Days to go`}
-              </span>
+
+              {event.status === 'completed' ? (
+                <>
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/90 text-white backdrop-blur-md flex items-center gap-1 shadow-sm">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" /> Executed Flawlessly
+                  </span>
+                  <Link
+                    href="/#previous-works"
+                    className="px-3 py-1 rounded-full text-[11px] font-bold bg-white/20 text-white hover:bg-white/30 backdrop-blur-md transition flex items-center gap-1"
+                  >
+                    <span>View in Previous Works Showcase →</span>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-md">
+                    {daysRemaining < 0 ? 'Past Date' : `${daysRemaining} Days to go`}
+                  </span>
+                  <button
+                    onClick={() => setIsReviewModalOpen(true)}
+                    className="px-3.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-md backdrop-blur-md transition flex items-center gap-1.5 active:scale-95"
+                  >
+                    <Sparkles className="w-3 h-3 text-slate-950" />
+                    <span>Complete Event & Submit Review</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -190,6 +217,19 @@ export default function EventWorkspaceLayout({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         {children}
       </div>
+
+      {/* Complete Event Review & Photo Modal */}
+      {event && (
+        <CompleteEventReviewModal
+          event={event}
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          onSuccess={() => {
+            const updated = PlanovaStore.getEventById(eventId);
+            if (updated) setEvent(updated);
+          }}
+        />
+      )}
     </div>
   );
 }
