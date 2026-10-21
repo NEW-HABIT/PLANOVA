@@ -50,17 +50,17 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-700 via-violet-600 to-indigo-900 flex items-center justify-center text-white shadow-glow group-hover:scale-105 transition-transform duration-200">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3E3239] via-[#6B5560] to-[#3E3239] flex items-center justify-center text-[#F7EFE7] shadow-sm group-hover:scale-105 transition-transform duration-200">
               <div className="relative">
-                <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-                <div className="absolute -inset-1 border border-white/30 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
+                <Sparkles className="w-5 h-5 text-[#E8D2C4] animate-pulse" />
+                <div className="absolute -inset-1 border border-[#E8D2C4]/40 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-800 via-violet-700 to-indigo-900 bg-clip-text text-transparent">
+              <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] bg-clip-text text-transparent">
                 PLANOVA
               </span>
-              <span className="text-[9px] font-medium tracking-widest text-violet-600 -mt-1 uppercase">
+              <span className="text-[9px] font-semibold tracking-widest text-[#6B5560] -mt-1 uppercase">
                 Premier Event Assistant
               </span>
             </div>
@@ -68,34 +68,34 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           {!isAuthPage && (
-            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#6B5560]">
               <Link 
                 href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"} 
-                className={`flex items-center gap-1.5 transition-colors hover:text-indigo-600 ${pathname === '/dashboard' ? 'text-indigo-600 font-semibold' : ''}`}
+                className={`flex items-center gap-1.5 transition-colors hover:text-[#3E3239] ${pathname === '/dashboard' ? 'text-[#3E3239] font-bold' : ''}`}
               >
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
               <Link 
-                href="/#our-works" 
-                className="transition-colors hover:text-indigo-600"
+                href="/#previous-works" 
+                className="transition-colors hover:text-[#3E3239]"
               >
                 Our Work
               </Link>
               <Link 
                 href="/features" 
-                className={`transition-colors hover:text-indigo-600 ${pathname === '/features' ? 'text-indigo-600 font-semibold' : ''}`}
+                className={`transition-colors hover:text-[#3E3239] ${pathname === '/features' ? 'text-[#3E3239] font-bold' : ''}`}
               >
                 Features
               </Link>
               <Link 
                 href="/pricing" 
-                className={`transition-colors hover:text-indigo-600 ${pathname === '/pricing' ? 'text-indigo-600 font-semibold' : ''}`}
+                className={`transition-colors hover:text-[#3E3239] ${pathname === '/pricing' ? 'text-[#3E3239] font-bold' : ''}`}
               >
                 Pricing
               </Link>
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100/80 text-violet-800 text-xs font-semibold border border-violet-200/50">
-                <Sparkles className="w-3 h-3 text-violet-600" />
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8D2C4]/70 text-[#3E3239] text-xs font-semibold border border-[#C7A9A3]/60 shadow-sm">
+                <Sparkles className="w-3 h-3 text-[#6B5560]" />
                 Intelligent Concierge
               </div>
             </nav>
@@ -109,16 +109,16 @@ export default function Navbar() {
                   <div className="flex items-center gap-3">
                     <Link
                       href="/settings/profile"
-                      className="flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-indigo-700 transition px-2.5 py-1.5 rounded-xl hover:bg-slate-100"
+                      className="flex items-center gap-2 text-xs font-bold text-[#3E3239] hover:text-[#6B5560] transition px-2.5 py-1.5 rounded-xl hover:bg-[#E8D2C4]/40"
                     >
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-center text-[10px] font-bold">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#3E3239] to-[#6B5560] text-[#F7EFE7] flex items-center justify-center text-[10px] font-bold">
                         {currentUser.full_name?.charAt(0) || 'U'}
                       </div>
                       <span className="truncate max-w-[100px]">{currentUser.full_name?.split(' ')[0]}</span>
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="p-1.5 text-slate-400 hover:text-slate-700 transition rounded-lg"
+                      className="p-1.5 text-[#9E8189] hover:text-[#3E3239] transition rounded-lg"
                       title="Sign Out"
                     >
                       <LogOut className="w-4 h-4" />
@@ -127,7 +127,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href="/auth/sign-in"
-                    className="px-3.5 py-1.5 text-sm font-medium text-slate-700 hover:text-indigo-700 transition"
+                    className="px-3.5 py-1.5 text-sm font-semibold text-[#3E3239] hover:text-[#6B5560] transition"
                   >
                     Sign In
                   </Link>
@@ -136,9 +136,9 @@ export default function Navbar() {
                 <Link
                   href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
                   onClick={handlePlanMyEventClick}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-800 hover:opacity-95 shadow-md shadow-indigo-600/20 active:scale-[0.98] transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:from-[#6B5560] hover:to-[#3E3239] shadow-md shadow-[#3E3239]/20 hover:shadow-lg active:scale-[0.98] transition-all"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-4 h-4 text-[#E8D2C4]" />
                   <span>Plan My Event</span>
                 </Link>
               </>
@@ -150,17 +150,17 @@ export default function Navbar() {
             <Link
               href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
               onClick={handlePlanMyEventClick}
-              className="p-2 text-white bg-indigo-600 rounded-lg"
+              className="p-2 text-[#F7EFE7] bg-[#3E3239] rounded-lg"
               title="New Event"
             >
               <PlusCircle className="w-5 h-5" />
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-600 hover:text-indigo-600 rounded-lg"
+              className="p-2 text-[#3E3239] hover:text-[#6B5560] rounded-lg"
               aria-label="Toggle Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6 text-[#3E3239]" />}
             </button>
           </div>
         </div>
@@ -168,33 +168,33 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden glass-panel border-b border-slate-200 px-4 pt-3 pb-5 space-y-3 shadow-xl">
+        <div className="md:hidden glass-panel border-b border-[#E8D2C4] px-4 pt-3 pb-5 space-y-3 shadow-xl">
           <Link
             href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"}
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100"
+            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-[#3E3239] rounded-lg hover:bg-[#E8D2C4]/40"
           >
-            <LayoutDashboard className="w-5 h-5 text-indigo-600" />
+            <LayoutDashboard className="w-5 h-5 text-[#6B5560]" />
             Dashboard
           </Link>
           <Link
-            href="/#our-works"
+            href="/#previous-works"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100"
+            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-[#3E3239] rounded-lg hover:bg-[#E8D2C4]/40"
           >
             Our Work
           </Link>
           <Link
             href="/features"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100"
+            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-[#3E3239] rounded-lg hover:bg-[#E8D2C4]/40"
           >
             Features
           </Link>
           <Link
             href="/pricing"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100"
+            className="flex items-center gap-2 px-3 py-2 text-base font-medium text-[#3E3239] rounded-lg hover:bg-[#E8D2C4]/40"
           >
             Pricing
           </Link>
@@ -205,7 +205,7 @@ export default function Navbar() {
                 handleSignOut();
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center gap-2 w-full px-3 py-2 text-base font-medium text-red-600 rounded-lg hover:bg-red-50 text-left"
+              className="flex items-center gap-2 w-full px-3 py-2 text-base font-medium text-rose-700 rounded-lg hover:bg-rose-50 text-left"
             >
               <LogOut className="w-5 h-5" />
               Sign Out
@@ -214,7 +214,7 @@ export default function Navbar() {
             <Link
               href="/auth/sign-in"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-base font-medium text-indigo-700 rounded-lg hover:bg-indigo-50"
+              className="flex items-center gap-2 px-3 py-2 text-base font-medium text-[#3E3239] rounded-lg hover:bg-[#E8D2C4]/40"
             >
               Sign In
             </Link>
@@ -226,9 +226,9 @@ export default function Navbar() {
               setMobileMenuOpen(false);
               handlePlanMyEventClick(e);
             }}
-            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-white font-semibold bg-gradient-to-r from-indigo-700 to-violet-600 shadow-md"
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-[#F7EFE7] font-semibold bg-gradient-to-r from-[#3E3239] to-[#6B5560] shadow-md"
           >
-            <PlusCircle className="w-5 h-5" />
+            <PlusCircle className="w-5 h-5 text-[#E8D2C4]" />
             Plan My Event
           </Link>
         </div>

@@ -140,7 +140,7 @@ export default function CompleteEventReviewModal({
         owner_review: ownerReview,
         rating,
         highlight,
-        savingsAchieved,
+        savings_achieved: savingsAchieved,
         gallery_images: galleryImages.length > 0 ? galleryImages : [
           'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80',
         ],

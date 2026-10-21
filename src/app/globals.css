@@ -3,20 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #FAFAFF;
-  --foreground: #17172A;
+  --background: #F7EFE7;
+  --foreground: #3E3239;
   --card: #FFFFFF;
-  --card-foreground: #17172A;
-  --primary: #4338CA;
-  --primary-foreground: #FFFFFF;
-  --secondary: #7C3AED;
-  --secondary-foreground: #FFFFFF;
-  --muted: #F1F1F8;
-  --muted-foreground: #64748B;
-  --accent: #EDE9FE;
-  --accent-foreground: #4338CA;
-  --border: #E2E8F0;
-  --radius: 0.75rem;
+  --card-foreground: #3E3239;
+  --primary: #3E3239;
+  --primary-foreground: #F7EFE7;
+  --secondary: #6B5560;
+  --secondary-foreground: #F7EFE7;
+  --muted: #E8D2C4;
+  --muted-foreground: #6B5560;
+  --accent: #C7A9A3;
+  --accent-foreground: #3E3239;
+  --border: #E8D2C4;
+  --radius: 1rem;
 }
 
 .dark {
@@ -42,33 +42,33 @@ body {
   min-height: 100vh;
 }
 
-/* Glassmorphism helpers */
+/* Glassmorphism helpers matching luxury palette */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(247, 239, 231, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(199, 169, 163, 0.4);
 }
 
 .dark .glass-panel {
-  background: rgba(19, 18, 38, 0.75);
+  background: rgba(62, 50, 57, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(158, 129, 137, 0.25);
 }
 
 .glass-nav {
-  background: rgba(250, 250, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  background: rgba(247, 239, 231, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(232, 210, 196, 0.85);
 }
 
 .dark .glass-nav {
-  background: rgba(11, 10, 26, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(35, 34, 71, 0.8);
+  background: rgba(62, 50, 57, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(107, 85, 96, 0.4);
 }
 
 /* Custom Scrollbars */

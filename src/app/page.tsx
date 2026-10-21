@@ -55,97 +55,184 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background ambient aesthetic glows */}
+    <div className="relative overflow-hidden bg-[#F7EFE7] text-[#3E3239]">
+      {/* Background ambient aesthetic glows using user's color combo */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[650px] pointer-events-none -z-10">
-        <div className="absolute top-10 left-1/4 w-96 h-96 bg-violet-400/20 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div className="absolute top-28 right-1/4 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-8 left-1/4 w-[28rem] h-[28rem] bg-[#E8D2C4]/50 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute top-20 right-1/4 w-96 h-96 bg-[#C7A9A3]/35 rounded-full blur-[110px] animate-float-slow"></div>
+        <div className="absolute top-96 left-1/3 w-80 h-80 bg-[#9E8189]/25 rounded-full blur-[90px] animate-float"></div>
       </div>
 
-      {/* 1. HERO SECTION */}
-      <section className="pt-12 pb-20 md:pt-20 md:pb-28">
+      {/* 1. HERO SECTION WITH Bespoke Palette & Micro-Animations */}
+      <section className="pt-12 pb-20 md:pt-18 md:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Aesthetic Pill badge */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column: Vision, Headline & CTA */}
+            <div className="lg:col-span-7 text-center lg:text-left">
+              {/* Aesthetic Pill badge */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F7EFE7] border border-[#C7A9A3] text-[#3E3239] text-xs font-bold mb-6 shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#9E8189] animate-pulse" />
+                <span>Intelligent Event Planning & Production</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6B5560]"></span>
+                <span className="text-[#6B5560]">Flawless Executions</span>
+              </motion.div>
+
+              {/* Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#3E3239] tracking-tight leading-[1.14]"
+              >
+                Your Event. Your Vision.{' '}
+                <span className="bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#9E8189] bg-clip-text text-transparent">
+                  Perfectly Planned.
+                </span>
+              </motion.h1>
+
+              {/* Supporting text */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-6 text-lg sm:text-xl text-[#6B5560] leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal"
+              >
+                Meet your personal event planner. Create personalized celebrations, manage your budget,
+                coordinate vendors, and bring every exquisite detail together in one calm space.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+              >
+                <Link
+                  href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
+                  onClick={handlePlanMyEventClick}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:from-[#6B5560] hover:to-[#3E3239] shadow-lg shadow-[#3E3239]/20 hover:shadow-xl hover:shadow-[#6B5560]/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
+                >
+                  <Sparkles className="w-5 h-5 text-[#E8D2C4]" />
+                  <span>Plan My Event</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <a
+                  href="#previous-works"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold text-[#3E3239] bg-[#F7EFE7] border border-[#C7A9A3] hover:bg-[#E8D2C4]/40 hover:border-[#9E8189] hover:-translate-y-0.5 active:scale-[0.98] shadow-sm transition-all"
+                >
+                  <span>View Our Previous Works</span>
+                  <ArrowRight className="w-4 h-4 text-[#9E8189]" />
+                </a>
+              </motion.div>
+
+              <p className="mt-4 text-xs font-medium text-[#9E8189] tracking-wide">
+                "Every Great Moment Starts with a Plan." • Login required to create your event
+              </p>
+            </div>
+
+            {/* Right Column: Animated Palette Moodboard Showcase (Directly Matching User Image) */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200/70 text-violet-800 text-xs font-bold mb-6 shadow-sm"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.25 }}
+              className="lg:col-span-5 flex justify-center"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              <span>Intelligent Event Planning & Production</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
-              <span className="text-indigo-700">Flawless Executions</span>
+              <div className="relative w-full max-w-[340px] sm:max-w-[380px] p-6 sm:p-7 rounded-[2.5rem] bg-gradient-to-b from-[#2D2328] via-[#3E3239] to-[#251D22] border border-[#6B5560]/40 shadow-[0_20px_50px_rgba(62,50,57,0.35)] overflow-hidden">
+                {/* Ambient Soft Glow in top-left corner matching user screenshot */}
+                <div className="absolute -top-12 -left-12 w-44 h-44 rounded-full bg-[#E8D2C4]/25 blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-10 -right-10 w-44 h-44 rounded-full bg-[#9E8189]/20 blur-3xl pointer-events-none" />
+
+                {/* Top Badge */}
+                <div className="flex items-center justify-between mb-5 relative z-10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#E8D2C4] animate-pulse"></span>
+                    <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#E8D2C4]/90">
+                      Signature Palette
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-[#C7A9A3] font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
+                    6 Curated Tones
+                  </span>
+                </div>
+
+                {/* 6 Stacked Animated Pills matching the exact user image */}
+                <div className="space-y-2.5 relative z-10">
+                  {[
+                    { hex: '#3E3239', name: 'Royal Espresso', role: 'Architecture & Staging', textDark: false },
+                    { hex: '#6B5560', name: 'Velvet Wine', role: 'Drapes & Evening Atmosphere', textDark: false },
+                    { hex: '#9E8189', name: 'Dusty Roseplum', role: 'Bespoke Floral Accents', textDark: false },
+                    { hex: '#C7A9A3', name: 'Soft Sand', role: 'Stationery & Fine Linens', textDark: true },
+                    { hex: '#E8D2C4', name: 'Warm Champagne', role: 'Ambient Lighting Glow', textDark: true },
+                    { hex: '#F7EFE7', name: 'Pure Silk', role: 'Base Canvas & Day Lighting', textDark: true },
+                  ].map((shade, i) => (
+                    <motion.div
+                      key={shade.hex}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: 0.15 + i * 0.08 }}
+                      whileHover={{ scale: 1.03, x: 4 }}
+                      className="group relative h-13 sm:h-14 rounded-full flex items-center justify-between px-6 shadow-md transition-all cursor-pointer border border-white/10"
+                      style={{ backgroundColor: shade.hex }}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={`font-mono text-xs sm:text-sm font-bold tracking-wider ${
+                            shade.textDark ? 'text-[#3E3239]' : 'text-[#F7EFE7]'
+                          }`}
+                        >
+                          {shade.hex}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span
+                          className={`text-[11px] font-semibold block transition-opacity ${
+                            shade.textDark ? 'text-[#3E3239]/80' : 'text-[#F7EFE7]/80'
+                          }`}
+                        >
+                          {shade.name}
+                        </span>
+                        <span
+                          className={`text-[9px] font-medium hidden sm:block ${
+                            shade.textDark ? 'text-[#3E3239]/60' : 'text-[#F7EFE7]/60'
+                          }`}
+                        >
+                          {shade.role}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Footer caption */}
+                <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-[#C7A9A3]/80 relative z-10">
+                  <span>Harmonized for Every Celebration</span>
+                  <span className="font-semibold text-[#E8D2C4]">PLANOVA Haute Design</span>
+                </div>
+              </div>
             </motion.div>
 
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.14]"
-            >
-              Your Event. Your Vision.{' '}
-              <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-900 bg-clip-text text-transparent">
-                Perfectlly Planned.
-              </span>
-            </motion.h1>
-
-            {/* Supporting text */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal"
-            >
-              Meet your personal event planner. Create personalized celebrations, manage your budget,
-              coordinate vendors, and bring every exquisite detail together in one calm space.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
-              <Link
-                href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
-                onClick={handlePlanMyEventClick}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-800 hover:shadow-xl hover:shadow-indigo-600/30 active:scale-[0.98] transition-all"
-              >
-                <Sparkles className="w-5 h-5 text-amber-300" />
-                <span>Plan My Event</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href="#previous-works"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold text-slate-700 bg-white border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] shadow-card transition-all"
-              >
-                <span>View Our Previous Works</span>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
-              </a>
-            </motion.div>
-
-            <p className="mt-4 text-xs font-medium text-slate-500 tracking-wide">
-              "Every Great Moment Starts with a Plan." • Login required to create your event
-            </p>
           </div>
         </div>
       </section>
 
       {/* 2. OUR PREVIOUS WORKS SECTION (Showcase of Real Celebrations) */}
-      <section id="previous-works" className="py-20 bg-white border-y border-slate-200/60 scroll-mt-20">
+      <section id="previous-works" className="py-20 bg-[#F7EFE7] border-y border-[#E8D2C4] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-violet-700 bg-violet-100/70 px-3.5 py-1.5 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#3E3239] bg-[#E8D2C4] border border-[#C7A9A3]/50 px-3.5 py-1.5 rounded-full">
               Real Experiences & Accomplishments
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-3">
+            <h2 className="text-3xl sm:text-4xl font-black text-[#3E3239] tracking-tight mt-3">
               Our Previous Works
             </h2>
-            <p className="text-slate-600 mt-2 text-sm sm:text-base">
+            <p className="text-[#6B5560] mt-2 text-sm sm:text-base">
               Click any celebration to view high-resolution event galleries, verified owner reviews, and real financial savings.
             </p>
           </div>
@@ -158,7 +245,7 @@ export default function LandingPage() {
                   setActiveModalWork(work);
                   setActivePhotoIdx(0);
                 }}
-                className="rounded-3xl overflow-hidden bg-white border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+                className="rounded-3xl overflow-hidden bg-white border border-[#E8D2C4] shadow-[0_6px_25px_-5px_rgba(62,50,57,0.06)] hover:shadow-2xl hover:shadow-[#3E3239]/15 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
               >
                 {/* Image Header with Pills */}
                 <div className="relative h-60 w-full overflow-hidden bg-slate-900">
@@ -168,49 +255,49 @@ export default function LandingPage() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-black/20 to-black/10 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#3E3239]/90 via-black/20 to-black/10 pointer-events-none" />
 
                   {/* Top-Left Category / Theme Tag Pill */}
-                  <div className="absolute top-3.5 left-3.5 px-3.5 py-1 rounded-full bg-white text-slate-900 text-xs font-bold shadow-md tracking-tight">
+                  <div className="absolute top-3.5 left-3.5 px-3.5 py-1 rounded-full bg-[#F7EFE7] text-[#3E3239] border border-[#E8D2C4] text-xs font-bold shadow-md tracking-tight">
                     {work.tag || work.category}
                   </div>
 
                   {/* Top-Right Photo Count Indicator */}
-                  <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-bold backdrop-blur-sm flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-amber-300" />
+                  <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full bg-[#3E3239]/70 text-[#F7EFE7] text-[11px] font-bold backdrop-blur-sm flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#E8D2C4]" />
                     <span>{work.gallery_images?.length || 1} Photos</span>
                   </div>
 
                   {/* Bottom info on image: Location & Budget */}
-                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white text-xs drop-shadow">
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[#F7EFE7] text-xs drop-shadow">
                     <span className="font-bold truncate max-w-[65%]">{work.location}</span>
-                    <span className="font-extrabold text-amber-300 shrink-0">{work.budget}</span>
+                    <span className="font-extrabold text-[#E8D2C4] shrink-0">{work.budget}</span>
                   </div>
                 </div>
 
                 {/* Card Content Matching Exact Provided Screenshot */}
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <span className="text-[11px] font-bold text-indigo-600 tracking-wider uppercase block">
+                    <span className="text-[11px] font-bold text-[#9E8189] tracking-wider uppercase block">
                       {work.category}
                     </span>
-                    <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1 leading-snug group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-base sm:text-lg font-black text-[#3E3239] mt-1 leading-snug group-hover:text-[#6B5560] transition-colors">
                       {work.title}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-2 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-[#6B5560] mt-2 leading-relaxed line-clamp-2 font-normal">
                       {work.highlight || work.owner_review}
                     </p>
                   </div>
 
                   {/* Divider and Footer: Guest Count & Status */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
-                      <Users className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="pt-3 border-t border-[#E8D2C4]/70 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-[#9E8189] font-medium">
+                      <Users className="w-3.5 h-3.5 text-[#C7A9A3]" />
                       <span>{work.guests} Guests</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 font-bold text-emerald-600">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <div className="flex items-center gap-1.5 font-bold text-[#6B5560]">
+                      <CheckCircle2 className="w-4 h-4 text-[#9E8189]" />
                       <span>Executed Flawlessly</span>
                     </div>
                   </div>
@@ -223,9 +310,9 @@ export default function LandingPage() {
             <Link
               href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
               onClick={handlePlanMyEventClick}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-sm font-bold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md transition"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-sm font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:shadow-xl hover:shadow-[#6B5560]/25 active:scale-95 transition"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
+              <Sparkles className="w-4 h-4 text-[#E8D2C4]" />
               <span>Create Your Event Blueprint</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -236,32 +323,32 @@ export default function LandingPage() {
       {/* INTERACTIVE PREVIOUS WORK MODAL (Animated Photo Gallery & Owner Review) */}
       {activeModalWork && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-[#3E3239]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200"
           onClick={() => setActiveModalWork(null)}
         >
           <div
-            className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 my-auto animate-in zoom-in-95 duration-200 relative"
+            className="bg-[#F7EFE7] rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#C7A9A3]/50 my-auto animate-in zoom-in-95 duration-200 relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-4 bg-gradient-to-r from-slate-50 via-white to-indigo-50/40">
+            <div className="p-5 sm:p-6 border-b border-[#E8D2C4] flex items-start justify-between gap-4 bg-gradient-to-r from-[#F7EFE7] via-white to-[#E8D2C4]/50">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700">
+                  <span className="px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#E8D2C4] text-[#3E3239]">
                     {activeModalWork.tag || activeModalWork.category}
                   </span>
-                  <span className="text-xs text-slate-500 font-medium">
+                  <span className="text-xs text-[#6B5560] font-medium">
                     {activeModalWork.location}
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                <h3 className="text-xl sm:text-2xl font-black text-[#3E3239] mt-1">
                   {activeModalWork.title}
                 </h3>
               </div>
 
               <button
                 onClick={() => setActiveModalWork(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0"
+                className="p-2 rounded-xl text-[#9E8189] hover:text-[#3E3239] hover:bg-[#E8D2C4]/50 transition shrink-0"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -300,7 +387,7 @@ export default function LandingPage() {
                         prev === 0 ? activeModalWork.gallery_images.length - 1 : prev - 1
                       )
                     }
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/90 active:scale-95 transition backdrop-blur-sm z-10"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#3E3239]/70 text-[#F7EFE7] hover:bg-[#3E3239] active:scale-95 transition backdrop-blur-sm z-10"
                     title="Previous Photo"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -311,7 +398,7 @@ export default function LandingPage() {
                         prev === activeModalWork.gallery_images.length - 1 ? 0 : prev + 1
                       )
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/90 active:scale-95 transition backdrop-blur-sm z-10"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#3E3239]/70 text-[#F7EFE7] hover:bg-[#3E3239] active:scale-95 transition backdrop-blur-sm z-10"
                     title="Next Photo"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -320,21 +407,21 @@ export default function LandingPage() {
               )}
 
               {/* Photo position badge */}
-              <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/70 text-white text-[11px] font-bold backdrop-blur-sm z-10">
+              <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-[#3E3239]/70 text-[#F7EFE7] text-[11px] font-bold backdrop-blur-sm z-10">
                 Photo {activePhotoIdx + 1} of {activeModalWork.gallery_images?.length || 1}
               </div>
             </div>
 
             {/* Thumbnail selector strip */}
             {activeModalWork.gallery_images && activeModalWork.gallery_images.length > 1 && (
-              <div className="flex items-center gap-2 p-3 bg-slate-50 border-b border-slate-100 overflow-x-auto">
+              <div className="flex items-center gap-2 p-3 bg-[#F7EFE7] border-b border-[#E8D2C4] overflow-x-auto">
                 {activeModalWork.gallery_images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setActivePhotoIdx(i)}
                     className={`relative w-16 h-12 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
                       activePhotoIdx === i
-                        ? 'border-indigo-600 scale-105 shadow-md ring-2 ring-indigo-200'
+                        ? 'border-[#3E3239] scale-105 shadow-md ring-2 ring-[#C7A9A3]'
                         : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
@@ -348,25 +435,25 @@ export default function LandingPage() {
             <div className="p-5 sm:p-6 space-y-5">
               {/* Event Metrics Badges */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-center">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Budget</span>
-                  <span className="text-sm font-black text-indigo-900">{activeModalWork.budget}</span>
+                <div className="p-3 rounded-2xl bg-white border border-[#E8D2C4] text-center">
+                  <span className="text-[10px] uppercase font-bold text-[#9E8189] block">Total Budget</span>
+                  <span className="text-sm font-black text-[#3E3239]">{activeModalWork.budget}</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-violet-50/70 border border-violet-100 text-center">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Attendance</span>
-                  <span className="text-sm font-black text-violet-900">{activeModalWork.guests} Guests</span>
+                <div className="p-3 rounded-2xl bg-white border border-[#E8D2C4] text-center">
+                  <span className="text-[10px] uppercase font-bold text-[#9E8189] block">Attendance</span>
+                  <span className="text-sm font-black text-[#6B5560]">{activeModalWork.guests} Guests</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100 text-center">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Execution Outcome</span>
-                  <span className="text-sm font-black text-emerald-800">100% On-Budget</span>
+                <div className="p-3 rounded-2xl bg-white border border-[#E8D2C4] text-center">
+                  <span className="text-[10px] uppercase font-bold text-[#9E8189] block">Execution Outcome</span>
+                  <span className="text-sm font-black text-[#6B5560]">100% On-Budget</span>
                 </div>
               </div>
 
               {/* Owner Testimonial Card: "How PLANOVA Helped" */}
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div className="p-5 rounded-2xl bg-white border border-[#E8D2C4] space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-sm relative shadow-sm">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-r from-[#3E3239] to-[#6B5560] text-[#F7EFE7] flex items-center justify-center font-bold text-sm relative shadow-sm">
                       {activeModalWork.owner_avatar ? (
                         <Image
                           src={activeModalWork.owner_avatar}
@@ -379,9 +466,9 @@ export default function LandingPage() {
                       )}
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">{activeModalWork.owner_name}</h4>
-                      <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Verified Celebration Host
+                      <h4 className="text-sm font-bold text-[#3E3239]">{activeModalWork.owner_name}</h4>
+                      <span className="text-[11px] text-[#6B5560] font-semibold flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#9E8189]" /> Verified Celebration Host
                       </span>
                     </div>
                   </div>
@@ -394,16 +481,16 @@ export default function LandingPage() {
                 </div>
 
                 <div className="relative pt-1">
-                  <Quote className="w-5 h-5 text-indigo-300 absolute -top-1 -left-1 opacity-40" />
-                  <p className="text-xs sm:text-sm text-slate-700 pl-5 leading-relaxed font-normal">
+                  <Quote className="w-5 h-5 text-[#C7A9A3] absolute -top-1 -left-1 opacity-50" />
+                  <p className="text-xs sm:text-sm text-[#3E3239] pl-5 leading-relaxed font-normal">
                     {activeModalWork.owner_review}
                   </p>
                 </div>
 
                 {activeModalWork.savings_achieved && (
-                  <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-medium">Financial Impact:</span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">
+                  <div className="pt-2 border-t border-[#E8D2C4] flex items-center justify-between text-xs">
+                    <span className="text-[#6B5560] font-medium">Financial Impact:</span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#E8D2C4] text-[#3E3239] font-bold text-[11px]">
                       {activeModalWork.savings_achieved}
                     </span>
                   </div>
@@ -414,7 +501,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-between pt-2">
                 <button
                   onClick={() => setActiveModalWork(null)}
-                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800"
+                  className="px-4 py-2 text-xs font-bold text-[#9E8189] hover:text-[#3E3239]"
                 >
                   Close Gallery
                 </button>
@@ -424,9 +511,9 @@ export default function LandingPage() {
                     setActiveModalWork(null);
                     handlePlanMyEventClick(e);
                   }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md transition"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] to-[#6B5560] hover:shadow-md transition"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#E8D2C4]" />
                   <span>Plan My Celebration Like This</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
@@ -437,50 +524,50 @@ export default function LandingPage() {
       )}
 
       {/* 3. HOW PLANOVA WORKS IN 3 STEPS */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20 bg-[#F7EFE7] border-y border-[#E8D2C4]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-violet-700 bg-violet-100/70 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#3E3239] bg-[#E8D2C4] px-3 py-1 rounded-full border border-[#C7A9A3]/50">
               Peace of Mind
             </span>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight mt-3">
+            <h2 className="text-3xl font-black text-[#3E3239] tracking-tight mt-3">
               How PLANOVA Works in 3 Simple Steps
             </h2>
-            <p className="text-slate-600 mt-2 text-sm sm:text-base">
+            <p className="text-[#6B5560] mt-2 text-sm sm:text-base">
               Say goodbye to messy spreadsheets and forgotten vendors. From idea to execution in minutes.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Step 1 */}
-            <div className="p-8 rounded-3xl bg-white border border-slate-200/80 shadow-card hover:shadow-xl transition-all relative group">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-xl mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 rounded-3xl bg-white border border-[#E8D2C4] shadow-card hover:shadow-xl hover:-translate-y-1.5 transition-all relative group">
+              <div className="w-14 h-14 rounded-2xl bg-[#E8D2C4] text-[#3E3239] flex items-center justify-center font-black text-xl mb-6 group-hover:scale-110 transition-transform">
                 01
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Define Your Event Vision</h3>
-              <p className="text-slate-600 text-sm mt-3 leading-relaxed">
+              <h3 className="text-xl font-bold text-[#3E3239]">Define Your Event Vision</h3>
+              <p className="text-[#6B5560] text-sm mt-3 leading-relaxed">
                 Tell PLANOVA your celebration style, guest count, city, and target budget. Tailored for weddings, birthdays, or galas.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="p-8 rounded-3xl bg-white border border-slate-200/80 shadow-card hover:shadow-xl transition-all relative group">
-              <div className="w-14 h-14 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center font-black text-xl mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 rounded-3xl bg-white border border-[#E8D2C4] shadow-card hover:shadow-xl hover:-translate-y-1.5 transition-all relative group">
+              <div className="w-14 h-14 rounded-2xl bg-[#C7A9A3]/60 text-[#3E3239] flex items-center justify-center font-black text-xl mb-6 group-hover:scale-110 transition-transform">
                 02
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Synthesize Complete Plan</h3>
-              <p className="text-slate-600 text-sm mt-3 leading-relaxed">
+              <h3 className="text-xl font-bold text-[#3E3239]">Synthesize Complete Plan</h3>
+              <p className="text-[#6B5560] text-sm mt-3 leading-relaxed">
                 Receive an itemized budget with protected reserves, timeline milestones, vendor questionnaires, and dining menus.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="p-8 rounded-3xl bg-white border border-slate-200/80 shadow-card hover:shadow-xl transition-all relative group">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xl mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 rounded-3xl bg-white border border-[#E8D2C4] shadow-card hover:shadow-xl hover:-translate-y-1.5 transition-all relative group">
+              <div className="w-14 h-14 rounded-2xl bg-[#E8D2C4] text-[#3E3239] flex items-center justify-center font-black text-xl mb-6 group-hover:scale-110 transition-transform">
                 03
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Manage & Celebrate</h3>
-              <p className="text-slate-600 text-sm mt-3 leading-relaxed">
+              <h3 className="text-xl font-bold text-[#3E3239]">Manage & Celebrate</h3>
+              <p className="text-[#6B5560] text-sm mt-3 leading-relaxed">
                 Track payments against limits, compare vendor proposals side-by-side, gather RSVPs, and consult your assistant.
               </p>
             </div>
@@ -489,97 +576,97 @@ export default function LandingPage() {
       </section>
 
       {/* 4. PRICING SECTION */}
-      <section className="py-20 bg-white border-t border-slate-200/80">
+      <section className="py-20 bg-white border-t border-[#E8D2C4]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-violet-700 bg-violet-100/70 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#3E3239] bg-[#E8D2C4] border border-[#C7A9A3]/50 px-3 py-1 rounded-full">
               Simple & Predictable
             </span>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight mt-3">
+            <h2 className="text-3xl font-black text-[#3E3239] tracking-tight mt-3">
               Plans for Every Celebration
             </h2>
-            <p className="text-slate-600 text-sm mt-2">
+            <p className="text-[#6B5560] text-sm mt-2">
               Start free today or unlock multi-day wedding and festival production capabilities.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Starter */}
-            <div className="p-8 rounded-3xl bg-[#FAFAFF] border border-slate-200 flex flex-col justify-between">
+            <div className="p-8 rounded-3xl bg-[#F7EFE7] border border-[#E8D2C4] flex flex-col justify-between shadow-sm">
               <div>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Free Starter</span>
+                <span className="text-xs font-bold text-[#9E8189] uppercase tracking-wider">Free Starter</span>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-slate-900">₹0</span>
-                  <span className="text-xs text-slate-500">/ forever</span>
+                  <span className="text-4xl font-extrabold text-[#3E3239]">₹0</span>
+                  <span className="text-xs text-[#6B5560]">/ forever</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">Essential features for single-day personal parties.</p>
+                <p className="text-xs text-[#6B5560] mt-2">Essential features for single-day personal parties.</p>
 
-                <ul className="mt-6 space-y-3 text-xs text-slate-600">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> 1 Active Event Workspace</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Full Plan Synthesis</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Interactive Budget Tracker</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Up to 50 Guests RSVP</li>
+                <ul className="mt-6 space-y-3 text-xs text-[#3E3239]">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> 1 Active Event Workspace</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Full Plan Synthesis</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Interactive Budget Tracker</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Up to 50 Guests RSVP</li>
                 </ul>
               </div>
               <Link
                 href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
                 onClick={handlePlanMyEventClick}
-                className="mt-8 block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition"
+                className="mt-8 block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-[#3E3239] bg-[#E8D2C4] hover:bg-[#C7A9A3]/50 transition"
               >
                 Get Started Free
               </Link>
             </div>
 
             {/* Pro Planner (Featured) */}
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-900 to-violet-950 text-white shadow-2xl relative flex flex-col justify-between border border-violet-700/50">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider shadow">
+            <div className="p-8 rounded-3xl bg-gradient-to-b from-[#3E3239] to-[#6B5560] text-[#F7EFE7] shadow-2xl relative flex flex-col justify-between border border-[#C7A9A3]/50">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-[#C7A9A3] to-[#E8D2C4] text-[#3E3239] text-[10px] font-black uppercase tracking-wider shadow">
                 Most Popular
               </div>
               <div>
-                <span className="text-xs font-bold text-violet-300 uppercase tracking-wider">Pro Planner</span>
+                <span className="text-xs font-bold text-[#E8D2C4] uppercase tracking-wider">Pro Planner</span>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">₹1,499</span>
-                  <span className="text-xs text-violet-200">/ event</span>
+                  <span className="text-4xl font-extrabold text-[#F7EFE7]">₹1,499</span>
+                  <span className="text-xs text-[#C7A9A3]">/ event</span>
                 </div>
-                <p className="text-xs text-violet-200 mt-2">Tailored for destination weddings, multi-day parties, and summits.</p>
+                <p className="text-xs text-[#E8D2C4] mt-2">Tailored for destination weddings, multi-day parties, and summits.</p>
 
-                <ul className="mt-6 space-y-3 text-xs text-violet-100">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-300" /> Unlimited Plan Regenerations</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-300" /> Vendor Side-by-Side Comparison Matrix</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-300" /> Unlimited Guests & CSV Import/Export</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-300" /> Creative Studio Copywriting Tools</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-300" /> 24/7 Context-Aware Planning Assistant</li>
+                <ul className="mt-6 space-y-3 text-xs text-[#F7EFE7]">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#E8D2C4]" /> Unlimited Plan Regenerations</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#E8D2C4]" /> Vendor Side-by-Side Comparison Matrix</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#E8D2C4]" /> Unlimited Guests & CSV Import/Export</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#E8D2C4]" /> Creative Studio Copywriting Tools</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#E8D2C4]" /> 24/7 Context-Aware Planning Assistant</li>
                 </ul>
               </div>
               <Link
                 href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
                 onClick={handlePlanMyEventClick}
-                className="mt-8 block text-center py-3 px-4 rounded-xl text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 shadow-md transition"
+                className="mt-8 block text-center py-3 px-4 rounded-xl text-xs font-bold text-[#3E3239] bg-[#E8D2C4] hover:bg-[#F7EFE7] shadow-md transition"
               >
                 Unlock Pro Planner
               </Link>
             </div>
 
             {/* Agency Studio */}
-            <div className="p-8 rounded-3xl bg-[#FAFAFF] border border-slate-200 flex flex-col justify-between">
+            <div className="p-8 rounded-3xl bg-[#F7EFE7] border border-[#E8D2C4] flex flex-col justify-between shadow-sm">
               <div>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Studio & Enterprise</span>
+                <span className="text-xs font-bold text-[#9E8189] uppercase tracking-wider">Studio & Enterprise</span>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-slate-900">₹4,999</span>
-                  <span className="text-xs text-slate-500">/ month</span>
+                  <span className="text-4xl font-extrabold text-[#3E3239]">₹4,999</span>
+                  <span className="text-xs text-[#6B5560]">/ month</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">For event management firms, hotels, and college committees.</p>
+                <p className="text-xs text-[#6B5560] mt-2">For event management firms, hotels, and college committees.</p>
 
-                <ul className="mt-6 space-y-3 text-xs text-slate-600">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Unlimited Concurrent Events</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Team Collaboration & Permissions</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Printable PDF & CSV Exporting</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Priority Support Concierge</li>
+                <ul className="mt-6 space-y-3 text-xs text-[#3E3239]">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Unlimited Concurrent Events</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Team Collaboration & Permissions</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Printable PDF & CSV Exporting</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#9E8189]" /> Priority Support Concierge</li>
                 </ul>
               </div>
               <Link
                 href="/pricing"
-                className="mt-8 block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition"
+                className="mt-8 block text-center py-2.5 px-4 rounded-xl text-xs font-bold text-[#3E3239] bg-white border border-[#C7A9A3] hover:bg-[#E8D2C4]/30 transition"
               >
                 Contact Concierge
               </Link>
@@ -589,11 +676,11 @@ export default function LandingPage() {
       </section>
 
       {/* 5. FAQ ACCORDION */}
-      <section className="py-20 bg-slate-50 border-t border-slate-200">
+      <section className="py-20 bg-[#F7EFE7] border-t border-[#E8D2C4]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-slate-900">Frequently Asked Questions</h2>
-            <p className="text-slate-600 text-sm mt-1">Everything you need to know about PLANOVA and event planning.</p>
+            <h2 className="text-3xl font-black text-[#3E3239]">Frequently Asked Questions</h2>
+            <p className="text-[#6B5560] text-sm mt-1">Everything you need to know about PLANOVA and event planning.</p>
           </div>
 
           <div className="space-y-4">
@@ -617,21 +704,21 @@ export default function LandingPage() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm"
+                className="bg-white rounded-2xl border border-[#E8D2C4] overflow-hidden shadow-sm hover:border-[#C7A9A3] transition-colors"
               >
                 <button
                   onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-5 text-left text-sm font-bold text-slate-900 hover:text-indigo-600 transition"
+                  className="w-full flex items-center justify-between p-5 text-left text-sm font-bold text-[#3E3239] hover:text-[#6B5560] transition"
                 >
                   <span>{item.q}</span>
                   {activeFaq === idx ? (
-                    <ChevronUp className="w-4 h-4 text-indigo-600" />
+                    <ChevronUp className="w-4 h-4 text-[#6B5560]" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                    <ChevronDown className="w-4 h-4 text-[#9E8189]" />
                   )}
                 </button>
                 {activeFaq === idx && (
-                  <div className="px-5 pb-5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                  <div className="px-5 pb-5 text-xs text-[#6B5560] leading-relaxed border-t border-[#E8D2C4]/60 pt-3">
                     {item.a}
                   </div>
                 )}
@@ -642,28 +729,28 @@ export default function LandingPage() {
       </section>
 
       {/* 6. FINAL BOTTOM CTA BANNER */}
-      <section className="py-16 bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-900 text-white">
+      <section className="py-16 bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] text-[#F7EFE7]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-black">
             Ready to Plan an Unforgettable Celebration?
           </h2>
-          <p className="mt-3 text-violet-100 text-sm sm:text-base max-w-xl mx-auto">
+          <p className="mt-3 text-[#E8D2C4] text-sm sm:text-base max-w-xl mx-auto">
             Join thousands of smart planners who simplify budgets, vendors, and timelines with PLANOVA.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
               onClick={handlePlanMyEventClick}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-indigo-900 font-bold text-sm shadow-xl hover:bg-violet-50 transition"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#F7EFE7] text-[#3E3239] font-bold text-sm shadow-xl hover:bg-[#E8D2C4] hover:scale-105 active:scale-95 transition-all"
             >
               Start Planning Now
             </Link>
             <a
               href="#previous-works"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-900/40 text-white border border-white/20 font-bold text-sm hover:bg-indigo-900/60 transition inline-flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 text-[#F7EFE7] border border-white/20 font-bold text-sm hover:bg-white/20 transition inline-flex items-center justify-center gap-2"
             >
               <span>Explore Previous Works</span>
-              <ArrowRight className="w-4 h-4 text-violet-200" />
+              <ArrowRight className="w-4 h-4 text-[#E8D2C4]" />
             </a>
           </div>
         </div>

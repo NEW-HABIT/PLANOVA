@@ -25,15 +25,24 @@ const config: Config = {
           900: "#1E1B4B",
           dark: "#17172A",
         },
+        palette: {
+          espresso: "#3E3239",
+          wine: "#6B5560",
+          roseplum: "#9E8189",
+          sand: "#C7A9A3",
+          champagne: "#E8D2C4",
+          silk: "#F7EFE7",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "Outfit", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        glass: "0 8px 32px 0 rgba(31, 38, 135, 0.08)",
-        glow: "0 0 25px -5px rgba(124, 58, 237, 0.35)",
-        card: "0 4px 20px -2px rgba(17, 24, 39, 0.05), 0 2px 6px -1px rgba(17, 24, 39, 0.02)",
+        glass: "0 8px 32px 0 rgba(62, 50, 57, 0.08)",
+        glow: "0 0 25px -5px rgba(158, 129, 137, 0.35)",
+        card: "0 4px 20px -2px rgba(62, 50, 57, 0.06), 0 2px 6px -1px rgba(62, 50, 57, 0.03)",
+        luxury: "0 20px 40px -15px rgba(62, 50, 57, 0.12)",
       },
       borderRadius: {
         "2xl": "1rem",
@@ -42,11 +51,17 @@ const config: Config = {
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "float": "float 6s ease-in-out infinite",
+        "float-slow": "float 9s ease-in-out infinite",
+        "shimmer": "shimmer 3s infinite linear",
       },
       keyframes: {
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-10px)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
     },
