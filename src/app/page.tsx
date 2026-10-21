@@ -63,161 +63,75 @@ export default function LandingPage() {
         <div className="absolute top-96 left-1/3 w-80 h-80 bg-[#9E8189]/25 rounded-full blur-[90px] animate-float"></div>
       </div>
 
-      {/* 1. HERO SECTION WITH Bespoke Palette & Micro-Animations */}
-      <section className="pt-12 pb-20 md:pt-18 md:pb-24">
+      {/* 1. HERO SECTION */}
+      <section className="pt-14 pb-20 md:pt-22 md:pb-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            
-            {/* Left Column: Vision, Headline & CTA */}
-            <div className="lg:col-span-7 text-center lg:text-left">
-              {/* Aesthetic Pill badge */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F7EFE7] border border-[#C7A9A3] text-[#3E3239] text-xs font-bold mb-6 shadow-sm"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#9E8189] animate-pulse" />
-                <span>Intelligent Event Planning & Production</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#6B5560]"></span>
-                <span className="text-[#6B5560]">Flawless Executions</span>
-              </motion.div>
-
-              {/* Headline */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#3E3239] tracking-tight leading-[1.14]"
-              >
-                Your Event. Your Vision.{' '}
-                <span className="bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#9E8189] bg-clip-text text-transparent">
-                  Perfectly Planned.
-                </span>
-              </motion.h1>
-
-              {/* Supporting text */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="mt-6 text-lg sm:text-xl text-[#6B5560] leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal"
-              >
-                Meet your personal event planner. Create personalized celebrations, manage your budget,
-                coordinate vendors, and bring every exquisite detail together in one calm space.
-              </motion.p>
-
-              {/* CTAs */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
-              >
-                <Link
-                  href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
-                  onClick={handlePlanMyEventClick}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:from-[#6B5560] hover:to-[#3E3239] shadow-lg shadow-[#3E3239]/20 hover:shadow-xl hover:shadow-[#6B5560]/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
-                >
-                  <Sparkles className="w-5 h-5 text-[#E8D2C4]" />
-                  <span>Plan My Event</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <a
-                  href="#previous-works"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold text-[#3E3239] bg-[#F7EFE7] border border-[#C7A9A3] hover:bg-[#E8D2C4]/40 hover:border-[#9E8189] hover:-translate-y-0.5 active:scale-[0.98] shadow-sm transition-all"
-                >
-                  <span>View Our Previous Works</span>
-                  <ArrowRight className="w-4 h-4 text-[#9E8189]" />
-                </a>
-              </motion.div>
-
-              <p className="mt-4 text-xs font-medium text-[#9E8189] tracking-wide">
-                "Every Great Moment Starts with a Plan." • Login required to create your event
-              </p>
-            </div>
-
-            {/* Right Column: Animated Palette Moodboard Showcase (Directly Matching User Image) */}
+          <div className="text-center max-w-3xl mx-auto">
+            {/* Aesthetic Pill badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.25 }}
-              className="lg:col-span-5 flex justify-center"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F7EFE7] border border-[#C7A9A3] text-[#3E3239] text-xs font-bold mb-6 shadow-sm"
             >
-              <div className="relative w-full max-w-[340px] sm:max-w-[380px] p-6 sm:p-7 rounded-[2.5rem] bg-gradient-to-b from-[#2D2328] via-[#3E3239] to-[#251D22] border border-[#6B5560]/40 shadow-[0_20px_50px_rgba(62,50,57,0.35)] overflow-hidden">
-                {/* Ambient Soft Glow in top-left corner matching user screenshot */}
-                <div className="absolute -top-12 -left-12 w-44 h-44 rounded-full bg-[#E8D2C4]/25 blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-10 -right-10 w-44 h-44 rounded-full bg-[#9E8189]/20 blur-3xl pointer-events-none" />
-
-                {/* Top Badge */}
-                <div className="flex items-center justify-between mb-5 relative z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#E8D2C4] animate-pulse"></span>
-                    <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#E8D2C4]/90">
-                      Signature Palette
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-[#C7A9A3] font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
-                    6 Curated Tones
-                  </span>
-                </div>
-
-                {/* 6 Stacked Animated Pills matching the exact user image */}
-                <div className="space-y-2.5 relative z-10">
-                  {[
-                    { hex: '#3E3239', name: 'Royal Espresso', role: 'Architecture & Staging', textDark: false },
-                    { hex: '#6B5560', name: 'Velvet Wine', role: 'Drapes & Evening Atmosphere', textDark: false },
-                    { hex: '#9E8189', name: 'Dusty Roseplum', role: 'Bespoke Floral Accents', textDark: false },
-                    { hex: '#C7A9A3', name: 'Soft Sand', role: 'Stationery & Fine Linens', textDark: true },
-                    { hex: '#E8D2C4', name: 'Warm Champagne', role: 'Ambient Lighting Glow', textDark: true },
-                    { hex: '#F7EFE7', name: 'Pure Silk', role: 'Base Canvas & Day Lighting', textDark: true },
-                  ].map((shade, i) => (
-                    <motion.div
-                      key={shade.hex}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: 0.15 + i * 0.08 }}
-                      whileHover={{ scale: 1.03, x: 4 }}
-                      className="group relative h-13 sm:h-14 rounded-full flex items-center justify-between px-6 shadow-md transition-all cursor-pointer border border-white/10"
-                      style={{ backgroundColor: shade.hex }}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`font-mono text-xs sm:text-sm font-bold tracking-wider ${
-                            shade.textDark ? 'text-[#3E3239]' : 'text-[#F7EFE7]'
-                          }`}
-                        >
-                          {shade.hex}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className={`text-[11px] font-semibold block transition-opacity ${
-                            shade.textDark ? 'text-[#3E3239]/80' : 'text-[#F7EFE7]/80'
-                          }`}
-                        >
-                          {shade.name}
-                        </span>
-                        <span
-                          className={`text-[9px] font-medium hidden sm:block ${
-                            shade.textDark ? 'text-[#3E3239]/60' : 'text-[#F7EFE7]/60'
-                          }`}
-                        >
-                          {shade.role}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Footer caption */}
-                <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-[#C7A9A3]/80 relative z-10">
-                  <span>Harmonized for Every Celebration</span>
-                  <span className="font-semibold text-[#E8D2C4]">PLANOVA Haute Design</span>
-                </div>
-              </div>
+              <Sparkles className="w-3.5 h-3.5 text-[#9E8189] animate-pulse" />
+              <span>Intelligent Event Planning & Production</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6B5560]"></span>
+              <span className="text-[#6B5560]">Flawless Executions</span>
             </motion.div>
 
+            {/* Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#3E3239] tracking-tight leading-[1.14]"
+            >
+              Your Event. Your Vision.{' '}
+              <span className="bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#9E8189] bg-clip-text text-transparent">
+                Perfectly Planned.
+              </span>
+            </motion.h1>
+
+            {/* Supporting text */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-6 text-lg sm:text-xl text-[#6B5560] leading-relaxed max-w-2xl mx-auto font-normal"
+            >
+              Meet your personal event planner. Create personalized celebrations, manage your budget,
+              coordinate vendors, and bring every exquisite detail together in one calm space.
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <Link
+                href={isAuth ? "/events/new" : "/auth/sign-in?redirect=/events/new"}
+                onClick={handlePlanMyEventClick}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:from-[#6B5560] hover:to-[#3E3239] shadow-lg shadow-[#3E3239]/20 hover:shadow-xl hover:shadow-[#6B5560]/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
+              >
+                <Sparkles className="w-5 h-5 text-[#E8D2C4]" />
+                <span>Plan My Event</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a
+                href="#previous-works"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold text-[#3E3239] bg-[#F7EFE7] border border-[#C7A9A3] hover:bg-[#E8D2C4]/40 hover:border-[#9E8189] hover:-translate-y-0.5 active:scale-[0.98] shadow-sm transition-all"
+              >
+                <span>View Our Previous Works</span>
+                <ArrowRight className="w-4 h-4 text-[#9E8189]" />
+              </a>
+            </motion.div>
+
+            <p className="mt-4 text-xs font-medium text-[#9E8189] tracking-wide">
+              "Every Great Moment Starts with a Plan." • Login required to create your event
+            </p>
           </div>
         </div>
       </section>
