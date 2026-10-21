@@ -186,7 +186,7 @@ export default function LandingPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/dashboard"
+                href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold text-slate-700 bg-white border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] shadow-card transition-all"
               >
                 <span>Explore Live Workspace</span>
@@ -418,7 +418,7 @@ export default function LandingPage() {
                 Want to customize this celebration or create your own?
               </span>
               <Link
-                href="/events/evt_royal_wedding/plan"
+                href={isAuth ? "/events/evt_royal_wedding/plan" : "/auth/sign-in?redirect=/events/evt_royal_wedding/plan"}
                 className="text-xs font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 group"
               >
                 <span>Open Full Master Plan</span>
@@ -729,7 +729,7 @@ export default function LandingPage() {
               Start Planning Now
             </Link>
             <Link
-              href="/dashboard"
+              href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"}
               className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-900/40 text-white border border-white/20 font-bold text-sm hover:bg-indigo-900/60 transition"
             >
               View Sample Workspaces

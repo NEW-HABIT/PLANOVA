@@ -70,7 +70,7 @@ export default function Navbar() {
           {!isAuthPage && (
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
               <Link 
-                href="/dashboard" 
+                href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"} 
                 className={`flex items-center gap-1.5 transition-colors hover:text-indigo-600 ${pathname === '/dashboard' ? 'text-indigo-600 font-semibold' : ''}`}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -170,7 +170,7 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden glass-panel border-b border-slate-200 px-4 pt-3 pb-5 space-y-3 shadow-xl">
           <Link
-            href="/dashboard"
+            href={isAuth ? "/dashboard" : "/auth/sign-in?redirect=/dashboard"}
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center gap-2 px-3 py-2 text-base font-medium text-slate-700 rounded-lg hover:bg-slate-100"
           >

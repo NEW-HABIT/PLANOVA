@@ -22,6 +22,8 @@ import {
 import { PlanovaStore } from '@/lib/storage';
 import { EventItem } from '@/types';
 import { formatDate, calculateDaysRemaining, formatCurrency } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { Lock } from 'lucide-react';
 
 export default function EventWorkspaceLayout({
   children,
@@ -29,17 +31,46 @@ export default function EventWorkspaceLayout({
   children: React.ReactNode;
 }) {
   const params = useParams();
+  const router = useRouter();
   const pathname = usePathname();
   const eventId = params.eventId as string;
 
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [event, setEvent] = useState<EventItem | null>(null);
 
   useEffect(() => {
+    const authStatus = PlanovaStore.isAuthenticated();
+    setIsAuthenticated(authStatus);
+    if (!authStatus) {
+      router.push(`/auth/sign-in?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
     if (eventId) {
       const evt = PlanovaStore.getEventById(eventId);
       if (evt) setEvent(evt);
     }
-  }, [eventId]);
+  }, [eventId, pathname, router]);
+
+  if (isAuthenticated === false) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <div className="p-8 max-w-md w-full bg-white rounded-3xl border border-slate-200 shadow-xl text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center mx-auto">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h2 className="text-xl font-black text-slate-900">Sign In Required</h2>
+          <p className="text-xs text-slate-600">Please sign in to access and edit this celebration workspace, budget records, and guest lists.</p>
+          <Link
+            href={`/auth/sign-in?redirect=${encodeURIComponent(pathname)}`}
+            className="block w-full py-3 px-4 rounded-xl text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800"
+          >
+            Sign In to Continue
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
