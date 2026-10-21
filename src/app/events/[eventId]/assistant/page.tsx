@@ -124,7 +124,7 @@ export default function AssistantPage() {
             PLANOVA Copilot: {event?.title}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Context-aware event intelligence powered by Groq Llama 3.3.
+            Context-aware event intelligence tailored to your venue, budget, and guest count.
           </p>
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
@@ -196,7 +196,7 @@ export default function AssistantPage() {
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-indigo-600 animate-ping" />
-                Consulting Groq Llama 3.3 with event parameters...
+                Reviewing schedule, budget numbers, and event parameters...
               </div>
             </div>
           )}

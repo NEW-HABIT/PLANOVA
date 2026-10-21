@@ -149,16 +149,16 @@ export default function DashboardPage() {
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase">Groq AI Engine</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase">Planning Concierge</span>
             <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <p className="text-base font-black text-slate-900 mt-2 flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Llama 3.3 Active
+            Assistant Active
           </p>
-          <span className="text-[11px] text-slate-500">Fast structured reasoning</span>
+          <span className="text-[11px] text-slate-500">24/7 Budget & Schedule Advice</span>
         </div>
       </div>
 

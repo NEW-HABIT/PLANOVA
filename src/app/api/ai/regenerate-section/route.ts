@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callGroqChat } from "@/lib/groq";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const { section, eventDetails, currentData } = await req.json();

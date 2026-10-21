@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import CookieConsent from '@/components/layout/CookieConsent';
 
 export const metadata: Metadata = {
   title: 'PLANOVA — AI-Powered Event Planning Platform',
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     'budget manager',
     'vendor comparison',
     'event schedule',
-    'Groq Llama 3',
+    'celebration planning',
     'PLANOVA',
   ],
   authors: [{ name: 'PLANOVA Engineering Team' }],
@@ -43,6 +44,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+        <CookieConsent />
       </body>
     </html>
   );

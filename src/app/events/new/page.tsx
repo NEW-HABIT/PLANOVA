@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Sparkles,
   ArrowRight,
@@ -20,6 +21,7 @@ import {
   Layers,
   ChefHat,
   Shield,
+  Lock,
 } from 'lucide-react';
 import { EventCategory, Currency, GeneratedPlan } from '@/types';
 import { PlanovaStore } from '@/lib/storage';
@@ -28,9 +30,14 @@ import { formatCurrency } from '@/lib/utils';
 
 export default function NewEventWizard() {
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [regeneratingSection, setRegeneratingSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsAuthenticated(PlanovaStore.isAuthenticated());
+  }, []);
 
   // Form State
   const [details, setDetails] = useState({
@@ -73,7 +80,53 @@ export default function NewEventWizard() {
 
   // Generated Plan
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedPlan | null>(null);
-  const [isMockResult, setIsMockResult] = useState<boolean>(false);
+
+  // If not authenticated, show premium prompt requiring sign in
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md p-8 rounded-3xl bg-white border border-slate-200/80 shadow-2xl text-center space-y-6">
+          <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-indigo-700 via-violet-600 to-indigo-900 flex items-center justify-center text-white mx-auto shadow-glow">
+            <Lock className="w-7 h-7 text-amber-300" />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-black text-slate-900">Sign In to Create Your Plan</h2>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              To ensure your customized blueprints, budget breakdowns, and vendor contacts remain securely saved to your account, please sign in or register.
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <button
+              onClick={() => {
+                PlanovaStore.login();
+                setIsAuthenticated(true);
+              }}
+              className="w-full py-3.5 px-4 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-800 hover:opacity-95 shadow-md flex items-center justify-center gap-2"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>One-Click Quick Sign In</span>
+            </button>
+
+            <Link
+              href="/auth/sign-in?redirect=/events/new"
+              className="w-full block py-3 px-4 rounded-2xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+            >
+              Sign In with Email
+            </Link>
+
+            <Link
+              href="/auth/sign-up?redirect=/events/new"
+              className="w-full block text-xs font-semibold text-indigo-700 hover:underline pt-2"
+            >
+              Don't have an account? Sign Up Free
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Trigger AI Plan Generation
   const handleGeneratePlan = async () => {
@@ -95,10 +148,8 @@ export default function NewEventWizard() {
       if (!res.ok) throw new Error('Generation failed');
       const data = await res.json();
       setGeneratedPlan(data.plan);
-      setIsMockResult(data.isMock);
     } catch (err) {
       console.error(err);
-      alert('AI plan synthesis encountered an issue. Loading contextual recommendation.');
     } finally {
       setIsGenerating(false);
     }
@@ -139,7 +190,6 @@ export default function NewEventWizard() {
     const newEventId = `evt_${Date.now()}`;
     const user = PlanovaStore.getUser();
 
-    // Default cover images by category
     const coverImages: Record<EventCategory, string> = {
       wedding: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
       birthday: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80',
@@ -174,7 +224,6 @@ export default function NewEventWizard() {
       updated_at: new Date().toISOString(),
     });
 
-    // Generate initial budget categories
     const initialCategories = generateInitialBudgetCategories(
       newEventId,
       budget.totalBudget,
@@ -183,7 +232,6 @@ export default function NewEventWizard() {
     );
     PlanovaStore.saveBudgetCategories(newEventId, initialCategories);
 
-    // Save initial tasks from plan
     if (generatedPlan?.task_checklist) {
       const initialTasks = generatedPlan.task_checklist.map((t, idx) => ({
         id: `tsk_${newEventId}_${idx + 1}`,
@@ -200,7 +248,6 @@ export default function NewEventWizard() {
       PlanovaStore.saveTasks(newEventId, initialTasks);
     }
 
-    // Save creative theme asset
     if (generatedPlan?.theme_concept) {
       PlanovaStore.addCreativeAsset(newEventId, {
         asset_type: 'theme',
@@ -210,7 +257,6 @@ export default function NewEventWizard() {
       });
     }
 
-    // Redirect to newly created event plan workspace
     router.push(`/events/${newEventId}/plan`);
   };
 
@@ -218,15 +264,15 @@ export default function NewEventWizard() {
     <div className="py-8 md:py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-violet-600" />
-          <span>Multi-Step AI Planner</span>
+        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-violet-100/70 text-violet-800 text-xs font-bold mb-2">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span>Curated Event Assistant</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Create Your Next Event
+          Create Your Next Celebration
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Follow 4 simple steps to let Groq Llama 3.3 synthesize a complete production blueprint.
+          Follow 4 simple steps to synthesize a tailored production blueprint.
         </p>
       </div>
 
@@ -237,13 +283,13 @@ export default function NewEventWizard() {
           { num: 2, label: 'Budget' },
           { num: 3, label: 'Style & Taste' },
           { num: 4, label: 'Priorities' },
-          { num: 5, label: 'AI Blueprint' },
+          { num: 5, label: 'Blueprint' },
         ].map((s) => (
           <div key={s.num} className="flex flex-col items-center">
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
                 currentStep === s.num
-                  ? 'bg-indigo-700 text-white ring-4 ring-indigo-100 shadow-md scale-105'
+                  ? 'bg-gradient-to-r from-indigo-700 to-violet-600 text-white ring-4 ring-indigo-100 shadow-md scale-105'
                   : currentStep > s.num
                   ? 'bg-emerald-500 text-white'
                   : 'bg-slate-100 text-slate-400'
@@ -279,7 +325,7 @@ export default function NewEventWizard() {
                 type="text"
                 value={details.title}
                 onChange={(e) => setDetails({ ...details, title: e.target.value })}
-                placeholder="e.g. Siddharth & Rhea's Sunset Wedding / TechConf 2027"
+                placeholder="e.g. Siddharth & Rhea's Sunset Wedding / Annual Leadership Gala"
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium"
               />
@@ -296,12 +342,12 @@ export default function NewEventWizard() {
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
                 >
                   <option value="wedding">Wedding / Reception</option>
-                  <option value="birthday">Birthday Party</option>
-                  <option value="anniversary">Anniversary</option>
-                  <option value="engagement">Engagement Celebration</option>
-                  <option value="corporate">Corporate Summit / Gala</option>
-                  <option value="college_fest">College Cultural Fest</option>
-                  <option value="community">Community Gathering</option>
+                  <option value="birthday">Birthday Celebration</option>
+                  <option value="anniversary">Anniversary Soirée</option>
+                  <option value="engagement">Engagement Party</option>
+                  <option value="corporate">Corporate Gala & Summit</option>
+                  <option value="college_fest">Youth & Cultural Fest</option>
+                  <option value="community">Community Banquet</option>
                   <option value="other">Other Occasion</option>
                 </select>
               </div>
@@ -362,7 +408,7 @@ export default function NewEventWizard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  City / Region *
+                  City / Location *
                 </label>
                 <input
                   type="text"
@@ -386,7 +432,7 @@ export default function NewEventWizard() {
                       onChange={() => setDetails({ ...details, isIndoor: true })}
                       className="text-indigo-600"
                     />
-                    Indoor (Banquet/Hall)
+                    Indoor (Banquet / Ballroom)
                   </label>
                   <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
                     <input
@@ -414,7 +460,7 @@ export default function NewEventWizard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Total Budget Amount *
+                  Total Budget Target *
                 </label>
                 <input
                   type="number"
@@ -451,7 +497,7 @@ export default function NewEventWizard() {
                     Emergency Contingency Reserve ({budget.emergencyReservePercentage}%)
                   </span>
                   <span className="text-[11px] text-indigo-700">
-                    Safeguarded fund for unanticipated last-minute surges or weather contingencies.
+                    Safeguarded reserve for unanticipated surges or sudden weather accommodations.
                   </span>
                 </div>
                 <span className="text-sm font-bold text-indigo-900">
@@ -472,7 +518,7 @@ export default function NewEventWizard() {
                 }
                 className="w-full accent-indigo-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-500">
+              <div className="flex justify-between text-[10px] text-slate-500 font-semibold">
                 <span>0% (Tight)</span>
                 <span>8% (Recommended)</span>
                 <span>20% (Conservative)</span>
@@ -488,7 +534,7 @@ export default function NewEventWizard() {
                   className="w-4 h-4 rounded text-indigo-600"
                 />
                 <span className="text-xs font-semibold text-slate-700">
-                  Strict Budget Cap (Alert me immediately if quotes or expenses exceed planned category targets)
+                  Strict Budget Cap (Alert me if vendor quotes or receipts approach category limits)
                 </span>
               </label>
             </div>
@@ -499,7 +545,7 @@ export default function NewEventWizard() {
         {currentStep === 3 && (
           <div className="space-y-6">
             <h2 className="text-lg font-bold text-slate-900 pb-3 border-b border-slate-100">
-              Step 3: Style, Theme & Cultural Preferences
+              Step 3: Style, Theme & Atmosphere
             </h2>
 
             <div>
@@ -526,7 +572,7 @@ export default function NewEventWizard() {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Theme / Atmosphere Inspiration
+                Atmosphere & Inspiration
               </label>
               <input
                 type="text"
@@ -546,7 +592,7 @@ export default function NewEventWizard() {
                   type="text"
                   value={stylePrefs.culturalPreferences}
                   onChange={(e) => setStylePrefs({ ...stylePrefs, culturalPreferences: e.target.value })}
-                  placeholder="e.g. Rajasthani Rajput, Bengali, South Indian, Contemporary Christian"
+                  placeholder="e.g. Rajasthani Rajput, Bengali, South Indian, Contemporary"
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
                 />
               </div>
@@ -559,7 +605,7 @@ export default function NewEventWizard() {
                   type="text"
                   value={stylePrefs.accessibilityRequirements}
                   onChange={(e) => setStylePrefs({ ...stylePrefs, accessibilityRequirements: e.target.value })}
-                  placeholder="e.g. Wheelchair access, Jain counter, Nut-free cake"
+                  placeholder="e.g. Wheelchair access, Jain counter, Nut-free dishes"
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
                 />
               </div>
@@ -571,18 +617,18 @@ export default function NewEventWizard() {
         {currentStep === 4 && (
           <div className="space-y-6">
             <h2 className="text-lg font-bold text-slate-900 pb-3 border-b border-slate-100">
-              Step 4: Planning Priorities
+              Step 4: Celebration Priorities
             </h2>
             <p className="text-xs text-slate-500">
-              Where should PLANOVA focus the greatest budget weight and attention?
+              Adjust where PLANOVA should direct the strongest budget emphasis and focus.
             </p>
 
             <div className="space-y-4">
               {[
-                { key: 'food', label: 'Catering & Beverages Quality' },
-                { key: 'venue', label: 'Venue Grandeur & Scenic Atmosphere' },
-                { key: 'decoration', label: 'Floral & Lighting Staging' },
-                { key: 'photography', label: 'Cinematography & Pre-shoots' },
+                { key: 'food', label: 'Catering & Dining Excellence' },
+                { key: 'venue', label: 'Venue Grandeur & Atmosphere' },
+                { key: 'decoration', label: 'Decor, Staging & Florals' },
+                { key: 'photography', label: 'Cinematography & Portraits' },
                 { key: 'entertainment', label: 'Live Bands, DJ & Emcee' },
               ].map((p) => (
                 <div key={p.key} className="space-y-1">
@@ -606,17 +652,17 @@ export default function NewEventWizard() {
           </div>
         )}
 
-        {/* STEP 5: AI BLUEPRINT REVIEW */}
+        {/* STEP 5: BLUEPRINT REVIEW */}
         {currentStep === 5 && (
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-amber-500" />
-                  AI Blueprint Review
+                  Celebration Blueprint
                 </h2>
                 <span className="text-xs text-slate-500">
-                  {isMockResult ? 'Demo Mode (Fast Synthesis)' : 'Generated via Groq Llama 3.3 70B'}
+                  Ready to review and launch into your workspace
                 </span>
               </div>
 
@@ -630,20 +676,30 @@ export default function NewEventWizard() {
               )}
             </div>
 
+            {/* Aesthetic Loading Animation */}
             {isGenerating ? (
-              <div className="py-16 text-center space-y-4">
-                <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto" />
-                <h3 className="text-base font-bold text-slate-800">
-                  Synthesizing Blueprint with Groq AI...
-                </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  Calculating venue sizing, plate ratios, contingency reserves, and minute-by-minute day schedules.
-                </p>
+              <div className="py-20 text-center space-y-6">
+                <div className="relative w-20 h-20 mx-auto">
+                  <div className="absolute inset-0 rounded-full border-4 border-indigo-200/50 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-700 via-violet-600 to-amber-400 animate-spin flex items-center justify-center p-1 shadow-glow">
+                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                      <Sparkles className="w-6 h-6 text-indigo-700 animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    Crafting Your Bespoke Event Blueprint...
+                  </h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed">
+                    Calculating venue staging, course allocations, guest flow, and minute-by-minute schedules.
+                  </p>
+                </div>
               </div>
             ) : generatedPlan ? (
               <div className="space-y-6">
                 {/* Overview Card */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
                   <span className="font-bold text-slate-900 block mb-1">Executive Summary</span>
                   {generatedPlan.overview}
                 </div>
@@ -652,7 +708,7 @@ export default function NewEventWizard() {
                 <div className="p-5 rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/40 to-violet-50/30 relative">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">
-                      Theme & Design Concept
+                      Theme & Atmosphere
                     </span>
                     <button
                       onClick={() => handleRegenerateSection('theme_concept')}
@@ -685,7 +741,7 @@ export default function NewEventWizard() {
                 <div className="p-5 rounded-2xl border border-slate-200">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                      Day Schedule Run-Through
+                      Schedule Run-Through
                     </span>
                     <button
                       onClick={() => handleRegenerateSection('day_schedule')}
@@ -700,7 +756,7 @@ export default function NewEventWizard() {
                   </div>
                   <div className="space-y-2">
                     {generatedPlan.day_schedule.map((slot, i) => (
-                      <div key={i} className="flex items-start gap-3 p-2 rounded-xl bg-slate-50 text-xs">
+                      <div key={i} className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 text-xs">
                         <span className="font-bold text-indigo-700 w-14 shrink-0">{slot.time}</span>
                         <div>
                           <span className="font-bold text-slate-900 block">{slot.activity}</span>
@@ -715,7 +771,7 @@ export default function NewEventWizard() {
                 <div className="p-5 rounded-2xl border border-slate-200">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                      Curated Gourmet Menu
+                      Dining Menu Concept
                     </span>
                     <button
                       onClick={() => handleRegenerateSection('menu_suggestions')}
@@ -772,7 +828,7 @@ export default function NewEventWizard() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-700 to-violet-600 shadow-lg hover:shadow-indigo-600/30"
             >
               <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>Synthesize Blueprint with AI</span>
+              <span>Generate Blueprint</span>
             </button>
           ) : (
             <button

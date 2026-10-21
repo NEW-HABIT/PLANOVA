@@ -25,6 +25,7 @@ import {
 
 const STORAGE_KEYS = {
   USER: "planova_user",
+  AUTH_TOKEN: "planova_auth_token",
   EVENTS: "planova_events",
   BUDGET_CATEGORIES: "planova_budget_categories",
   EXPENSES: "planova_expenses",
@@ -33,6 +34,7 @@ const STORAGE_KEYS = {
   GUESTS: "planova_guests",
   CREATIVE_ASSETS: "planova_creative_assets",
   AI_MESSAGES: "planova_ai_messages",
+  COOKIE_CONSENT: "planova_cookie_consent",
 };
 
 function safeGet<T>(key: string, defaultValue: T): T {
@@ -57,6 +59,31 @@ function safeSet<T>(key: string, value: T): void {
 }
 
 export const PlanovaStore = {
+  isAuthenticated(): boolean {
+    if (typeof window === "undefined") return false;
+    return !!localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  },
+
+  login(user?: UserProfile): void {
+    if (typeof window === "undefined") return;
+    const activeUser = user || this.getUser();
+    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, "session_active_" + Date.now());
+    this.setUser(activeUser);
+  },
+
+  logout(): void {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+  },
+
+  getCookieConsent(): boolean {
+    return safeGet<boolean>(STORAGE_KEYS.COOKIE_CONSENT, false);
+  },
+
+  setCookieConsent(accepted: boolean): void {
+    safeSet(STORAGE_KEYS.COOKIE_CONSENT, accepted);
+  },
+
   getUser(): UserProfile {
     return safeGet<UserProfile>(STORAGE_KEYS.USER, DEMO_USER);
   },

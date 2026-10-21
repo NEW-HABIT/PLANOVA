@@ -2,11 +2,15 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, ArrowRight, Lock, Mail, User, ShieldCheck } from 'lucide-react';
+import { PlanovaStore } from '@/lib/storage';
 
 export default function SignUpPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/dashboard';
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,9 +20,15 @@ export default function SignUpPage() {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
+      const current = PlanovaStore.getUser();
+      PlanovaStore.login({
+        ...current,
+        full_name: fullName || current.full_name,
+        email: email || current.email,
+      });
       setLoading(false);
-      router.push('/dashboard');
-    }, 600);
+      router.push(redirectPath);
+    }, 400);
   };
 
   return (
@@ -29,7 +39,7 @@ export default function SignUpPage() {
             <Sparkles className="w-6 h-6 text-amber-300" />
           </div>
           <h2 className="text-2xl font-black text-slate-900">Create Your PLANOVA Account</h2>
-          <p className="text-xs text-slate-500 mt-1">Join the next-generation of AI event planning</p>
+          <p className="text-xs text-slate-500 mt-1">Start planning your dream celebration with confidence</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -44,7 +54,7 @@ export default function SignUpPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent font-medium"
                 placeholder="Aarav Sharma"
               />
             </div>
@@ -61,7 +71,7 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent font-medium"
                 placeholder="aarav@domain.com"
               />
             </div>
@@ -79,7 +89,7 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent font-medium"
                 placeholder="At least 6 characters"
               />
             </div>
@@ -88,13 +98,13 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl text-sm font-bold text-white bg-indigo-700 hover:bg-indigo-800 transition shadow-md flex items-center justify-center gap-2 mt-2"
+            className="w-full py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-700 to-violet-600 hover:opacity-95 transition shadow-md flex items-center justify-center gap-2 mt-2"
           >
             {loading ? (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             ) : (
               <>
-                <span>Create Account</span>
+                <span>Create Account & Continue</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -104,7 +114,10 @@ export default function SignUpPage() {
         <div className="mt-6 pt-6 border-t border-slate-100 text-center">
           <p className="text-xs text-slate-500">
             Already have an account?{' '}
-            <Link href="/auth/sign-in" className="font-bold text-indigo-700 hover:underline">
+            <Link
+              href={redirectPath ? `/auth/sign-in?redirect=${encodeURIComponent(redirectPath)}` : "/auth/sign-in"}
+              className="font-bold text-indigo-700 hover:underline"
+            >
               Sign In
             </Link>
           </p>

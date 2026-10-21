@@ -18,8 +18,8 @@ export default function FeaturesPage() {
   const features = [
     {
       icon: Sparkles,
-      title: "Generative AI Event Concept Wizard",
-      description: "Powered by Groq Llama 3.3, PLANOVA synthesizes full event visions: color palettes, design concepts, stage themes, and spatial concepts in seconds.",
+      title: "Generative Event Concept Wizard",
+      description: "Synthesizes comprehensive event visions: curated color palettes, design concepts, stage themes, and spatial concepts in seconds.",
     },
     {
       icon: PieChart,
