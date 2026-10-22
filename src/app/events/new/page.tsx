@@ -98,27 +98,17 @@ export default function NewEventWizard() {
           </div>
 
           <div className="space-y-3 pt-2">
-            <button
-              onClick={() => {
-                PlanovaStore.login();
-                setIsAuthenticated(true);
-              }}
-              className="w-full py-3.5 px-4 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-800 hover:opacity-95 shadow-md flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>One-Click Quick Sign In</span>
-            </button>
-
             <Link
               href="/auth/sign-in?redirect=/events/new"
-              className="w-full block py-3 px-4 rounded-2xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+              className="w-full py-3.5 px-4 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-800 hover:opacity-95 shadow-md flex items-center justify-center gap-2"
             >
-              Sign In with Email
+              <span>Sign In to Your Account</span>
+              <ArrowRight className="w-4 h-4 text-amber-300" />
             </Link>
 
             <Link
               href="/auth/sign-up?redirect=/events/new"
-              className="w-full block text-xs font-semibold text-indigo-700 hover:underline pt-2"
+              className="w-full block py-3 px-4 rounded-2xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
             >
               Don't have an account? Sign Up Free
             </Link>

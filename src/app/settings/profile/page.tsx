@@ -2,17 +2,23 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { User, Mail, Globe, DollarSign, CheckCircle2, Shield, ArrowLeft } from 'lucide-react';
 import { PlanovaStore } from '@/lib/storage';
 import { UserProfile, Currency, EventCategory } from '@/types';
 
 export default function ProfileSettingsPage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile>(PlanovaStore.getUser());
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    if (!PlanovaStore.isAuthenticated()) {
+      router.push('/auth/sign-in?redirect=/settings/profile');
+      return;
+    }
     setProfile(PlanovaStore.getUser());
-  }, []);
+  }, [router]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();

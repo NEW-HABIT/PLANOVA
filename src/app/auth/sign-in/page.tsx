@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Sparkles, ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
+import { Sparkles, ArrowRight, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { PlanovaStore } from '@/lib/storage';
 
 function SignInContent() {
@@ -11,27 +11,32 @@ function SignInContent() {
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get('redirect') || '/dashboard';
 
-  const [email, setEmail] = useState('demo@planova.ai');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     setLoading(true);
-    setTimeout(() => {
-      PlanovaStore.login();
-      setLoading(false);
-      router.push(redirectPath);
-    }, 400);
-  };
 
-  const handleDemoLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      PlanovaStore.login();
+    try {
+      const result = await PlanovaStore.authenticate({ email, password });
+      if (!result.success) {
+        setErrorMessage(result.error || 'Invalid credentials. Please verify and try again.');
+        setLoading(false);
+        return;
+      }
+
+      // Successful login
       setLoading(false);
       router.push(redirectPath);
-    }, 250);
+    } catch {
+      setErrorMessage('An unexpected error occurred during sign in. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,46 +46,40 @@ function SignInContent() {
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#3E3239] via-[#6B5560] to-[#3E3239] flex items-center justify-center text-[#F7EFE7] mx-auto shadow-md mb-3">
             <Sparkles className="w-6 h-6 text-[#E8D2C4]" />
           </div>
-          <h2 className="text-2xl font-black text-[#3E3239]">Sign In to PLANOVA</h2>
+          <h1 className="text-2xl font-black text-[#3E3239]">Sign In to PLANOVA</h1>
           <p className="text-xs text-[#6B5560] mt-1">Access your secure event blueprints, budgets, and guest lists</p>
         </div>
 
-        {/* Quick Demo Access banner */}
-        <div className="mb-6 p-4 rounded-2xl bg-[#F7EFE7] border border-[#E8D2C4] flex items-center justify-between">
-          <div>
-            <span className="text-xs font-bold text-[#3E3239] block">Quick Access Demo</span>
-            <span className="text-[11px] text-[#6B5560]">Explore real celebrations and blueprints</span>
+        {errorMessage && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="leading-relaxed">{errorMessage}</div>
           </div>
-          <button
-            type="button"
-            onClick={handleDemoLogin}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] text-[#F7EFE7] text-xs font-bold hover:opacity-95 transition shadow-sm"
-          >
-            One-Click Login
-          </button>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-[#3E3239] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#3E3239] uppercase tracking-wider mb-1" htmlFor="email-input">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#9E8189] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-[#9E8189] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
+                id="email-input"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8D2C4] text-sm focus:outline-none focus:ring-2 focus:ring-[#3E3239] focus:border-transparent font-medium text-[#3E3239]"
-                placeholder="you@domain.com"
+                placeholder="name@example.com"
               />
             </div>
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="block text-xs font-bold text-[#3E3239] uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[#3E3239] uppercase tracking-wider" htmlFor="password-input">
                 Password
               </label>
               <Link href="/auth/forgot-password" className="text-xs text-[#6B5560] hover:underline">
@@ -88,22 +87,32 @@ function SignInContent() {
               </Link>
             </div>
             <div className="relative">
-              <Lock className="w-4 h-4 text-[#9E8189] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-[#9E8189] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
-                type="password"
+                id="password-input"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8D2C4] text-sm focus:outline-none focus:ring-2 focus:ring-[#3E3239] focus:border-transparent font-medium text-[#3E3239]"
+                className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-[#E8D2C4] text-sm focus:outline-none focus:ring-2 focus:ring-[#3E3239] focus:border-transparent font-medium text-[#3E3239]"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9E8189] hover:text-[#3E3239] transition p-0.5"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl text-sm font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:opacity-95 transition shadow-md flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 rounded-xl text-sm font-bold text-[#F7EFE7] bg-gradient-to-r from-[#3E3239] via-[#6B5560] to-[#3E3239] hover:opacity-95 transition shadow-md flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer"
           >
             {loading ? (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>

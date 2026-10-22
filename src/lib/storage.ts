@@ -13,7 +13,6 @@ import {
   CompletedEventReview,
 } from "@/types";
 import {
-  DEMO_USER,
   INITIAL_EVENTS,
   INITIAL_BUDGET_CATEGORIES,
   INITIAL_EXPENSES,
@@ -23,6 +22,7 @@ import {
   INITIAL_CREATIVE_ASSETS,
   INITIAL_AI_MESSAGES,
 } from "./seed-data";
+import { PlanovaAuth } from "./auth";
 
 const STORAGE_KEYS = {
   USER: "planova_user",
@@ -62,20 +62,26 @@ function safeSet<T>(key: string, value: T): void {
 
 export const PlanovaStore = {
   isAuthenticated(): boolean {
-    if (typeof window === "undefined") return false;
-    return !!localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+    return PlanovaAuth.isAuthenticated();
   },
 
   login(user?: UserProfile): void {
     if (typeof window === "undefined") return;
-    const activeUser = user || this.getUser();
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, "session_active_" + Date.now());
-    this.setUser(activeUser);
+    if (user) {
+      PlanovaAuth.updateUserProfile(user);
+    }
+  },
+
+  async register(params: { email: string; password: string; fullName: string }) {
+    return PlanovaAuth.register(params);
+  },
+
+  async authenticate(params: { email: string; password: string }) {
+    return PlanovaAuth.login(params);
   },
 
   logout(): void {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    PlanovaAuth.logout();
   },
 
   getCookieConsent(): boolean {
@@ -87,11 +93,15 @@ export const PlanovaStore = {
   },
 
   getUser(): UserProfile {
-    return safeGet<UserProfile>(STORAGE_KEYS.USER, DEMO_USER);
+    return PlanovaAuth.getUser() || PlanovaAuth.getSafeUser();
+  },
+
+  getAuthenticatedUser(): UserProfile | null {
+    return PlanovaAuth.getUser();
   },
 
   setUser(user: UserProfile): void {
-    safeSet(STORAGE_KEYS.USER, user);
+    PlanovaAuth.updateUserProfile(user);
   },
 
   getEvents(): EventItem[] {
