@@ -34,7 +34,20 @@ export default function AssistantPage() {
     if (eventId) {
       const evt = PlanovaStore.getEventById(eventId);
       if (evt) setEvent(evt);
-      setMessages(PlanovaStore.getAIMessages(eventId));
+      const existing = PlanovaStore.getAIMessages(eventId);
+      if (existing.length === 0 && evt) {
+        const welcomeMsg: AIMessageItem = {
+          id: `msg_welcome_${Date.now()}`,
+          event_id: eventId,
+          role: 'assistant',
+          content: `Hello! Welcome to the planning space for **${evt.title}**.\n\nI am here to help you coordinate every detail—from budget breakdowns and timelines to decor ideas and vendor checklists.\n\nHow can I help you today? Feel free to pick a suggestion below or ask me any question!`,
+          created_at: new Date().toISOString(),
+        };
+        PlanovaStore.addAIMessage(eventId, welcomeMsg);
+        setMessages([welcomeMsg]);
+      } else {
+        setMessages(existing);
+      }
     }
   }, [eventId]);
 
@@ -66,8 +79,15 @@ export default function AssistantPage() {
         }),
       });
 
-      if (!res.ok) throw new Error('Assistant API failed');
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || `Server returned error (${res.status})`);
+      }
+
+      if (!data.content) {
+        throw new Error('Could not get a response.');
+      }
 
       const botMsg = PlanovaStore.addAIMessage(eventId, {
         role: 'assistant',
@@ -77,13 +97,13 @@ export default function AssistantPage() {
       });
 
       setMessages((prev) => [...prev, botMsg]);
-    } catch (err) {
-      console.error(err);
-      const fallbackMsg = PlanovaStore.addAIMessage(eventId, {
+    } catch (err: any) {
+      console.error('Assistant error:', err);
+      const errMsg = PlanovaStore.addAIMessage(eventId, {
         role: 'assistant',
-        content: `I have analyzed your request regarding **${event.title}**. To maintain your target budget and preserve your emergency fund, prioritize confirming vendor contracts with clear cancellation clauses. Let me know if you would like me to draft a task or re-allocate your budget categories.`,
+        content: 'Something went wrong. Please try again in a moment.',
       });
-      setMessages((prev) => [...prev, fallbackMsg]);
+      setMessages((prev) => [...prev, errMsg]);
     } finally {
       setLoading(false);
     }
@@ -98,7 +118,7 @@ export default function AssistantPage() {
         due_date: event?.date || new Date().toISOString().split('T')[0],
         priority: msg.action_payload?.priority || 'high',
         status: 'todo',
-        assignee: 'Aarav Sharma',
+        assignee: PlanovaStore.getUser()?.full_name || 'Event Host',
         is_completed: false,
         category: 'Assistant',
       });
@@ -121,15 +141,15 @@ export default function AssistantPage() {
         <div>
           <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <Bot className="w-5 h-5 text-indigo-700" />
-            PLANOVA Copilot: {event?.title}
+            Event Assistant: {event?.title}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Context-aware event intelligence tailored to your venue, budget, and guest count.
+            Personalized planning advice for your celebration, venue, and guests.
           </p>
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Online & Aware
+          Online
         </div>
       </div>
 
@@ -180,7 +200,7 @@ export default function AssistantPage() {
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-700 text-white font-bold text-xs hover:bg-indigo-800 shadow-sm"
                       >
                         <PlusCircle className="w-3.5 h-3.5" />
-                        Add Suggested Task to Checklist
+                        Add Task to Checklist
                       </button>
                     </div>
                   )}
@@ -196,7 +216,7 @@ export default function AssistantPage() {
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-indigo-600 animate-ping" />
-                Reviewing schedule, budget numbers, and event parameters...
+                Thinking...
               </div>
             </div>
           )}
@@ -224,7 +244,7 @@ export default function AssistantPage() {
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !loading && handleSendMessage()}
-            placeholder={`Ask PLANOVA about ${event?.title || 'your event'}...`}
+            placeholder={`Ask a question about ${event?.title || 'your celebration'}...`}
             className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent font-medium"
           />
           <button

@@ -764,31 +764,4 @@ export const INITIAL_CREATIVE_ASSETS: Record<string, CreativeAssetItem[]> = {
   ],
 };
 
-export const INITIAL_AI_MESSAGES: Record<string, AIMessageItem[]> = {
-  evt_royal_wedding: [
-    {
-      id: "msg_1",
-      event_id: "evt_royal_wedding",
-      role: "assistant",
-      content:
-        "Namaste Aarav! I'm your PLANOVA AI assistant for **Rohan & Ananya's Royal Palace Wedding**. I have analyzed your ₹25 Lakh budget, 350 expected guests, and Jai Mahal Palace venue. Currently, you have committed ₹15.75 Lakh across 6 major vendor categories with ₹2 Lakh strictly preserved in your Emergency Reserve.\n\nHow can I help you today? You can ask me to optimize costs, draft vendor contracts, plan the ceremony timing, or generate custom entertainment ideas!",
-      created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-    },
-    {
-      id: "msg_2",
-      event_id: "evt_royal_wedding",
-      role: "user",
-      content: "Can you recommend how we can reduce catering expenses without compromising on the royal experience?",
-      created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
-    },
-    {
-      id: "msg_3",
-      event_id: "evt_royal_wedding",
-      role: "assistant",
-      content:
-        "Here are 3 high-impact strategies tailored for your Jai Mahal banquet:\n\n1. **Focus on Signature Live Theatres instead of 25+ buffet trays**: High-energy live counters (e.g., live artisanal jalebi & kachori counter) cost 18% less in prep waste while feeling significantly more premium to guests.\n2. **Optimize Dessert Variety**: Replace 8 generic desserts with 3 curated royal desserts (Baked Malpua, Kulfi, and Paan Gelato). This saves ~₹45,000.\n3. **Bar & Mocktail Rationalization**: Create 2 signature mocktails instead of an open soft beverage bar, saving ~₹30,000.\n\nWould you like me to draft an updated catering specification for Maharaja Royal Banquets?",
-      action_type: "update_budget",
-      created_at: new Date(Date.now() - 5 * 86400000 + 15000).toISOString(),
-    },
-  ],
-};
+export const INITIAL_AI_MESSAGES: Record<string, AIMessageItem[]> = {};

@@ -32,7 +32,6 @@ export default function Footer() {
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F7EFE7] mb-3">Celebration Suite</h4>
             <ul className="space-y-2 text-xs">
               <li><Link href="/events/new" className="hover:text-[#F7EFE7] transition">Personalized Event Wizard</Link></li>
-              <li><Link href="/dashboard" className="hover:text-[#F7EFE7] transition">Production Dashboard</Link></li>
               <li><Link href="/features" className="hover:text-[#F7EFE7] transition">Smart Budget Allocator</Link></li>
               <li><Link href="/features" className="hover:text-[#F7EFE7] transition">Curated Vendor Discovery</Link></li>
               <li><Link href="/features" className="hover:text-[#F7EFE7] transition">Creative Invitation Studio</Link></li>
@@ -69,7 +68,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2 text-[#E8D2C4]/90">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#C7A9A3]" />
-                <span>Dedicated Production Checklist</span>
+                <span>Dedicated Event Checklist</span>
               </li>
             </ul>
           </div>

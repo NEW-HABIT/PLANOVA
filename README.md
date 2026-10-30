@@ -21,8 +21,8 @@
     <a href="https://supabase.com/">
       <img src="https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase" alt="Supabase" />
     </a>
-    <a href="https://groq.com/">
-      <img src="https://img.shields.io/badge/Groq_API-Llama_3.3_70B-orange?style=for-the-badge" alt="Groq API" />
+    <a href="https://huggingface.co/">
+      <img src="https://img.shields.io/badge/Hugging_Face-Llama_3.3_70B-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" alt="Hugging Face" />
     </a>
   </p>
 </div>
@@ -132,9 +132,9 @@ cp .env.example .env.local
 
 Configure your credentials:
 ```env
-# Groq AI Cloud (Get free API key at https://console.groq.com/keys)
-GROQ_API_KEY=gsk_your_groq_api_key_here
-GROQ_MODEL=llama-3.3-70b-versatile
+# Hugging Face AI (Get free Access Token at https://huggingface.co/settings/tokens)
+HUGGINGFACE_API_KEY=hf_your_token_here
+HUGGINGFACE_MODEL=meta-llama/Llama-3.3-70B-Instruct
 
 # Supabase Database & Auth (Get keys at https://supabase.com/dashboard)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co

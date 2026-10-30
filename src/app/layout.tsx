@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     'celebration planning',
     'PLANOVA',
   ],
-  authors: [{ name: 'PLANOVA Engineering Team' }],
+  authors: [{ name: 'PLANOVA Team' }],
   openGraph: {
     title: 'PLANOVA — AI-Powered Event Planning Platform',
     description: 'Transform your celebration vision into an actionable, budgeted, and schedule-perfect reality with AI.',

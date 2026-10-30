@@ -28,7 +28,7 @@ export default function FeaturesPage() {
     },
     {
       icon: Clock,
-      title: "Timeline & Milestones Engine",
+      title: "Timeline & Milestones Planner",
       description: "Backward-scheduled checklists from event day (T-0) up to 6 months prior, automatically adjusting whenever event dates change.",
     },
     {
@@ -44,7 +44,7 @@ export default function FeaturesPage() {
     {
       icon: Bot,
       title: "Context-Aware Planning Assistant",
-      description: "Your 24/7 copilot that knows your budget and guest count. Ask to cut costs by 10%, solve rain emergencies, or update task lists.",
+      description: "Your 24/7 assistant that knows your budget and guest count. Ask for advice, ideas, or help updating checklists.",
     },
   ];
 
@@ -55,10 +55,10 @@ export default function FeaturesPage() {
           Capabilities
         </span>
         <h1 className="text-4xl font-black text-slate-900 tracking-tight mt-3">
-          Engineered for Extraordinary Celebrations
+          Designed for Extraordinary Celebrations
         </h1>
         <p className="text-slate-600 mt-3 text-base">
-          Discover how PLANOVA bridges Generative AI intelligence with precise production-grade event workflows.
+          Discover how PLANOVA helps you design, budget, and organize memorable celebrations with ease.
         </p>
       </div>
 

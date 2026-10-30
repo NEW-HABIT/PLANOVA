@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Globe, DollarSign, CheckCircle2, Shield, ArrowLeft } from 'lucide-react';
+import { User, Mail, Globe, DollarSign, CheckCircle2, Shield, ArrowLeft, Award, CreditCard, Sparkles } from 'lucide-react';
 import { PlanovaStore } from '@/lib/storage';
 import { UserProfile, Currency, EventCategory } from '@/types';
 
@@ -44,18 +44,66 @@ export default function ProfileSettingsPage() {
     { key: 'community', label: 'Community Festivals' },
   ];
 
+  const sub = profile.subscription;
+  const isUpgraded = sub && sub.tier !== 'starter';
+
   return (
     <div className="py-12 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">Account & Profile</h1>
-          <p className="text-xs text-slate-500 mt-1">Manage personal preferences and planning interests</p>
+          <p className="text-xs text-slate-500 mt-1">Manage personal preferences, planning interests, and subscription tier</p>
         </div>
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
+        </Link>
+      </div>
+
+      {/* Subscription Tier Overview Card */}
+      <div className={`p-6 rounded-3xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+        isUpgraded
+          ? 'bg-gradient-to-r from-[#3E3239] via-[#4F3F48] to-[#2E242A] text-white border-[#E8D2C4]'
+          : 'bg-white border-slate-200 text-slate-800'
+      }`}>
+        <div className="flex items-center gap-3.5">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+            isUpgraded ? 'bg-amber-400 text-slate-950 shadow-md' : 'bg-indigo-50 text-indigo-700'
+          }`}>
+            <Award className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider opacity-75">Active Plan</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                isUpgraded ? 'bg-amber-400 text-slate-950' : 'bg-slate-100 text-slate-700'
+              }`}>
+                {sub?.tier || 'Free Starter'}
+              </span>
+            </div>
+            <h3 className="text-lg font-black mt-0.5">
+              {sub?.plan_name || 'Free Starter Plan'}
+            </h3>
+            {sub?.current_period_end && (
+              <span className={`text-[11px] block mt-0.5 ${isUpgraded ? 'text-[#E8D2C4]' : 'text-slate-500'}`}>
+                Active period until {new Date(sub.current_period_end).toLocaleDateString()} {sub.invoice_id ? `• Invoice: ${sub.invoice_id}` : ''}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <Link
+          href="/pricing"
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            isUpgraded
+              ? 'bg-[#E8D2C4] text-[#3E3239] hover:bg-white'
+              : 'bg-indigo-700 text-white hover:bg-indigo-800 shadow-sm'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>{isUpgraded ? 'Change Plan' : 'Upgrade Plan'}</span>
         </Link>
       </div>
 

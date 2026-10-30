@@ -42,43 +42,39 @@ export default function CreativeStudioPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleGenerateAsset = (type: CreativeAssetItem['asset_type']) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleGenerateAsset = async (type: CreativeAssetItem['asset_type']) => {
     if (!event) return;
     setGeneratingType(type);
+    setErrorMessage(null);
 
-    setTimeout(() => {
-      let title = '';
-      let content = '';
-      let tags: string[] = [];
+    try {
+      const res = await fetch('/api/ai/creative-asset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, event }),
+      });
 
-      if (type === 'invitation') {
-        title = 'Bilingual Animated WhatsApp E-Invite';
-        content = `✨ You are cordially invited to celebrate ✨\n\n${event.title}\n\nJoin us as we create everlasting memories together!\n\n📅 Date: ${event.date}\n⏰ Time: ${event.start_time} Onwards\n📍 Venue: ${event.location}, ${event.city}\n\nKindly confirm your presence by RSVPing here: https://planova.ai/rsvp/${event.id}\n\nDress Code: Festive Elegance\nWarm Regards,\nHost Family`;
-        tags = ['WhatsApp', 'Friendly', 'Bilingual'];
-      } else if (type === 'social_post') {
-        title = 'Instagram & LinkedIn Countdown Announcement';
-        content = `Mark your calendars! 🌟\n\nOnly a few weeks left until ${event.title} in the magnificent heritage grounds of ${event.city}.\n\nFrom curated gourmet feasts to live acoustic nights, get ready for an unforgettable celebration. Stay tuned for behind-the-scenes teasers!\n\n#PLANOVA #${event.category} #CelebrationVibes #${event.city.split(',')[0]}Diaries`;
-        tags = ['Social', 'Instagram', 'Teaser'];
-      } else if (type === 'speech') {
-        title = 'Host Opening Welcome & Champagne Toast';
-        content = `Good evening distinguished guests, beloved family, and friends!\n\nWelcome to ${event.title}. Standing here looking at every radiant smile in this room, our hearts are overflowing with gratitude.\n\nTonight is not just about marking a date on the calendar; it is about celebrating the bonds, dreams, and joy that bring us together. Please indulge in the banquet, let your hair down, and let's make tonight truly legendary.\n\nPlease raise your glasses with me: To love, laughter, and lifelong memories! Cheers! 🥂`;
-        tags = ['Speech', 'Opening', 'Toast'];
-      } else if (type === 'schedule') {
-        title = 'VIP Emcee Cue Sheet & Transition Script';
-        content = `[16:00] Soft background sitar/ambient music. Welcome team greets guests with Kesariya Thandai.\n[17:30] Emcee announcement: "Ladies and gentlemen, kindly take your seats in the Grand Pavilion."\n[17:45] Main ceremonial entry with soft amber spotlight sequence.\n[19:15] Dinner announcement and opening of the Live Banquet Theatres.\n[21:00] Couple & family celebratory dance sequence.\n[22:30] Closing photo memories and farewell favors dispatch.`;
-        tags = ['Emcee', 'CueSheet', 'Production'];
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong.');
       }
 
-      const created = PlanovaStore.addCreativeAsset(eventId, {
+      PlanovaStore.addCreativeAsset(eventId, {
         asset_type: type,
-        title,
-        content,
-        tags,
+        title: data.title,
+        content: data.content,
+        tags: data.tags || ['Celebration'],
       });
 
       setAssets(PlanovaStore.getCreativeAssets(eventId));
+    } catch (err: any) {
+      console.error('Creative asset generation error:', err);
+      setErrorMessage('Something went wrong. Please try again.');
+    } finally {
       setGeneratingType(null);
-    }, 600);
+    }
   };
 
   return (
@@ -101,12 +97,18 @@ export default function CreativeStudioPage() {
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-amber-300" />
           <h3 className="text-sm font-extrabold tracking-wide uppercase">
-            Generate Creative Artifacts with Groq AI
+            Generate Creative Artifacts with Hugging Face AI
           </h3>
         </div>
         <p className="text-xs text-violet-200 max-w-xl">
           One-click generator tailored for {event?.title}. All content respects your event category, location, and stylistic tone.
         </p>
+
+        {errorMessage && (
+          <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-400 text-rose-100 text-xs">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-2.5 pt-1">
           <button

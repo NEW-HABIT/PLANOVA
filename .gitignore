@@ -35,3 +35,10 @@ next-env.d.ts
 .vscode/
 .idea/
 Thumbs.db
+
+# Local database & data files
+/data/
+*.sqlite
+*.sqlite3
+*.db
+*.jsonl

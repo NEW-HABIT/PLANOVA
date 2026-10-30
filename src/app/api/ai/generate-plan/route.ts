@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateFullEventPlan } from "@/lib/groq";
+import { generateFullEventPlan } from "@/lib/gemini";
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Error in generate-plan route:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to generate event plan" },
+      { error: "Something went wrong while generating your plan. Please try again." },
       { status: 500 }
     );
   }

@@ -229,7 +229,7 @@ export const PlanovaAuth = {
   },
 
   /**
-   * Register a new user with password hashing and cryptographic salt
+   * Register a new user directly in Supabase Auth & public.profiles database
    */
   async register({ email, password, fullName }: RegisterInput): Promise<AuthResult> {
     if (typeof window === 'undefined') {
@@ -248,81 +248,49 @@ export const PlanovaAuth = {
       return { success: false, error: 'Please provide a valid email address.' };
     }
 
-    if (!password || password.length < 8) {
-      return { success: false, error: 'Password must be at least 8 characters long.' };
+    if (!password || password.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' };
     }
 
-    const users = getRegisteredUsers();
-    const existing = users.find((u) => u.email.toLowerCase() === normalizedEmail);
-    if (existing) {
-      return {
-        success: false,
-        error: 'An account with this email address already exists. Please sign in instead.',
+    try {
+      // Call Supabase registration endpoint
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, password, fullName: cleanName }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { success: false, error: data.error || 'Registration failed.' };
+      }
+
+      const userProfile: UserProfile = data.user;
+      const sessionToken = generateSessionToken();
+      const session: AuthSession = {
+        token: sessionToken,
+        userId: userProfile.id,
+        expiresAt: Date.now() + SESSION_EXPIRY_MS,
       };
+
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(session));
+      localStorage.setItem(STORAGE_KEYS.LEGACY_TOKEN, sessionToken);
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(userProfile));
+      resetRateLimit();
+
+      return { success: true, user: userProfile };
+    } catch (err: any) {
+      console.error('Registration failed:', err);
+      return { success: false, error: 'Something went wrong. Please check your connection and try again.' };
     }
-
-    // Generate cryptographic salt and hash password
-    const salt = generateCryptographicSalt();
-    const hash = await hashPasswordWithSalt(password, salt);
-    const userId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-
-    const newProfile: UserProfile = {
-      id: userId,
-      email: normalizedEmail,
-      full_name: cleanName,
-      preferred_language: 'English',
-      currency: 'INR',
-      region: 'India',
-      planning_interests: ['wedding', 'birthday', 'corporate'],
-      created_at: new Date().toISOString(),
-    };
-
-    const newCredential: StoredUserCredential = {
-      id: userId,
-      email: normalizedEmail,
-      fullName: cleanName,
-      passwordHash: hash,
-      passwordSalt: salt,
-      createdAt: newProfile.created_at,
-      profile: newProfile,
-    };
-
-    users.push(newCredential);
-    saveRegisteredUsers(users);
-
-    // Create session
-    const sessionToken = generateSessionToken();
-    const session: AuthSession = {
-      token: sessionToken,
-      userId,
-      expiresAt: Date.now() + SESSION_EXPIRY_MS,
-    };
-
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(session));
-    localStorage.setItem(STORAGE_KEYS.LEGACY_TOKEN, sessionToken);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(newProfile));
-    resetRateLimit();
-
-    return { success: true, user: newProfile };
   },
 
   /**
-   * Authenticate a user by verifying hashed password against stored salt and hash
+   * Authenticate a user directly against Supabase Auth & public.profiles database
    */
   async login({ email, password }: LoginInput): Promise<AuthResult> {
     if (typeof window === 'undefined') {
       return { success: false, error: 'Login cannot be processed in SSR.' };
-    }
-
-    // Rate-limiting check
-    const rateLimit = getRateLimitState();
-    if (rateLimit.lockedUntil && rateLimit.lockedUntil > Date.now()) {
-      const waitSeconds = Math.ceil((rateLimit.lockedUntil - Date.now()) / 1000);
-      return {
-        success: false,
-        error: `Too many failed login attempts. For your security, account access is locked for ${waitSeconds} seconds.`,
-        lockedUntil: rateLimit.lockedUntil,
-      };
     }
 
     const normalizedEmail = email.trim().toLowerCase();
@@ -330,55 +298,37 @@ export const PlanovaAuth = {
       return { success: false, error: 'Please enter both your email address and password.' };
     }
 
-    const users = getRegisteredUsers();
-    const userRecord = users.find((u) => u.email.toLowerCase() === normalizedEmail);
+    try {
+      // Call Supabase authentication endpoint
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, password }),
+      });
 
-    if (!userRecord) {
-      const { lockedUntil } = recordFailedAttempt();
-      if (lockedUntil > Date.now()) {
-        return {
-          success: false,
-          error: 'Too many failed login attempts. Please wait 30 seconds before trying again.',
-          lockedUntil,
-        };
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { success: false, error: data.error || 'Invalid email or password.' };
       }
-      return {
-        success: false,
-        error: 'Invalid email or password. Please verify your credentials or create a new account.',
+
+      const userProfile: UserProfile = data.user;
+      const sessionToken = data.token || generateSessionToken();
+      const session: AuthSession = {
+        token: sessionToken,
+        userId: userProfile.id,
+        expiresAt: Date.now() + SESSION_EXPIRY_MS,
       };
+
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(session));
+      localStorage.setItem(STORAGE_KEYS.LEGACY_TOKEN, sessionToken);
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(userProfile));
+      resetRateLimit();
+
+      return { success: true, user: userProfile };
+    } catch (err: any) {
+      console.error('Login failed:', err);
+      return { success: false, error: 'Something went wrong. Please check your connection and try again.' };
     }
-
-    // Verify hash
-    const computedHash = await hashPasswordWithSalt(password, userRecord.passwordSalt);
-    if (computedHash !== userRecord.passwordHash) {
-      const { lockedUntil } = recordFailedAttempt();
-      if (lockedUntil > Date.now()) {
-        return {
-          success: false,
-          error: 'Too many failed login attempts. Please wait 30 seconds before trying again.',
-          lockedUntil,
-        };
-      }
-      return {
-        success: false,
-        error: 'Invalid email or password. Please verify your credentials or create a new account.',
-      };
-    }
-
-    // Authentication succeeded - establish session
-    resetRateLimit();
-    const sessionToken = generateSessionToken();
-    const session: AuthSession = {
-      token: sessionToken,
-      userId: userRecord.id,
-      expiresAt: Date.now() + SESSION_EXPIRY_MS,
-    };
-
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(session));
-    localStorage.setItem(STORAGE_KEYS.LEGACY_TOKEN, sessionToken);
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(userRecord.profile));
-
-    return { success: true, user: userRecord.profile };
   },
 
   /**

@@ -28,6 +28,8 @@ const STORAGE_KEYS = {
   USER: "planova_user",
   AUTH_TOKEN: "planova_auth_token",
   EVENTS: "planova_events",
+  DELETED_EVENT_IDS: "planova_deleted_event_ids",
+  INITIALIZED: "planova_events_initialized",
   BUDGET_CATEGORIES: "planova_budget_categories",
   EXPENSES: "planova_expenses",
   TASKS: "planova_tasks",
@@ -105,12 +107,29 @@ export const PlanovaStore = {
   },
 
   getEvents(): EventItem[] {
+    const deletedIds = safeGet<string[]>(STORAGE_KEYS.DELETED_EVENT_IDS, []);
     const events = safeGet<EventItem[]>(STORAGE_KEYS.EVENTS, []);
-    if (!events || events.length === 0) {
-      safeSet(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
-      return INITIAL_EVENTS;
+    return events.filter((e) => !deletedIds.includes(e.id));
+  },
+
+  async fetchEventsFromDb(userId?: string): Promise<EventItem[]> {
+    if (typeof window === "undefined") return this.getEvents();
+    try {
+      const url = userId ? `/api/events?userId=${userId}` : '/api/events';
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.events)) {
+          const deletedIds = safeGet<string[]>(STORAGE_KEYS.DELETED_EVENT_IDS, []);
+          const validEvents = data.events.filter((e: EventItem) => !deletedIds.includes(e.id));
+          safeSet(STORAGE_KEYS.EVENTS, validEvents);
+          return validEvents;
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch events from DB, using local cache:', e);
     }
-    return events;
+    return this.getEvents();
   },
 
   getEventById(id: string): EventItem | undefined {
@@ -121,27 +140,72 @@ export const PlanovaStore = {
   saveEvent(event: EventItem): void {
     const events = this.getEvents();
     const index = events.findIndex((e) => e.id === event.id);
+    const updated: EventItem = {
+      ...event,
+      updated_at: new Date().toISOString(),
+      created_at: event.created_at || new Date().toISOString(),
+    };
     if (index >= 0) {
-      events[index] = { ...event, updated_at: new Date().toISOString() };
+      events[index] = updated;
     } else {
-      events.unshift({
-        ...event,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
+      events.unshift(updated);
     }
     safeSet(STORAGE_KEYS.EVENTS, events);
+
+    // Sync to backend DB asynchronously
+    if (typeof window !== "undefined") {
+      fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      }).catch((err) => console.warn('Backend DB save event sync:', err));
+    }
   },
 
   deleteEvent(id: string): void {
-    const events = this.getEvents().filter((e) => e.id !== id);
+    // 1. Mark permanently deleted so it NEVER resurrects
+    const deletedIds = safeGet<string[]>(STORAGE_KEYS.DELETED_EVENT_IDS, []);
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      safeSet(STORAGE_KEYS.DELETED_EVENT_IDS, deletedIds);
+    }
+
+    // 2. Remove from active events list
+    const events = safeGet<EventItem[]>(STORAGE_KEYS.EVENTS, []).filter((e) => e.id !== id);
     safeSet(STORAGE_KEYS.EVENTS, events);
+
+    // 3. Cascade clean child records
+    const allTasks = safeGet<Record<string, TaskItem[]>>(STORAGE_KEYS.TASKS, {});
+    delete allTasks[id];
+    safeSet(STORAGE_KEYS.TASKS, allTasks);
+
+    const allCats = safeGet<Record<string, BudgetCategoryItem[]>>(STORAGE_KEYS.BUDGET_CATEGORIES, {});
+    delete allCats[id];
+    safeSet(STORAGE_KEYS.BUDGET_CATEGORIES, allCats);
+
+    const allExpenses = safeGet<Record<string, ExpenseItem[]>>(STORAGE_KEYS.EXPENSES, {});
+    delete allExpenses[id];
+    safeSet(STORAGE_KEYS.EXPENSES, allExpenses);
+
+    // 4. Real permanent deletion on backend DB
+    if (typeof window !== "undefined") {
+      fetch(`/api/events/${id}`, { method: 'DELETE' }).catch((err) =>
+        console.warn('Backend DB delete sync:', err)
+      );
+    }
   },
 
   duplicateEvent(id: string): EventItem | null {
     const event = this.getEventById(id);
     if (!event) return null;
-    const newId = `evt_${Date.now()}`;
+    const newId =
+      typeof window !== 'undefined' && window.crypto?.randomUUID
+        ? window.crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = (Math.random() * 16) | 0;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          });
     const duplicate: EventItem = {
       ...event,
       id: newId,
@@ -237,6 +301,26 @@ export const PlanovaStore = {
     safeSet(STORAGE_KEYS.TASKS, all);
   },
 
+  recalculateEventProgress(eventId: string): number {
+    const tasks = this.getTasks(eventId);
+    const event = this.getEventById(eventId);
+    if (!event) return 0;
+    const progress = tasks.length > 0
+      ? Math.round((tasks.filter((t) => t.is_completed || t.status === 'completed').length / tasks.length) * 100)
+      : 0;
+
+    if (event.progress_percentage !== progress) {
+      event.progress_percentage = progress;
+      const events = this.getEvents();
+      const index = events.findIndex((e) => e.id === eventId);
+      if (index >= 0) {
+        events[index] = { ...event, progress_percentage: progress };
+        safeSet(STORAGE_KEYS.EVENTS, events);
+      }
+    }
+    return progress;
+  },
+
   addTask(eventId: string, task: Omit<TaskItem, "id" | "event_id">): TaskItem {
     const tasks = this.getTasks(eventId);
     const newTask: TaskItem = {
@@ -246,6 +330,16 @@ export const PlanovaStore = {
     };
     tasks.unshift(newTask);
     this.saveTasks(eventId, tasks);
+    this.recalculateEventProgress(eventId);
+
+    if (typeof window !== "undefined") {
+      fetch(`/api/events/${eventId}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTask),
+      }).catch((err) => console.warn('Backend DB task add sync:', err));
+    }
+
     return newTask;
   },
 
@@ -256,12 +350,28 @@ export const PlanovaStore = {
       task.is_completed = !task.is_completed;
       task.status = task.is_completed ? "completed" : "todo";
       this.saveTasks(eventId, tasks);
+      this.recalculateEventProgress(eventId);
+
+      if (typeof window !== "undefined") {
+        fetch(`/api/events/${eventId}/tasks`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taskId, is_completed: task.is_completed, status: task.status }),
+        }).catch((err) => console.warn('Backend DB task update sync:', err));
+      }
     }
   },
 
   deleteTask(eventId: string, taskId: string): void {
     const tasks = this.getTasks(eventId).filter((t) => t.id !== taskId);
     this.saveTasks(eventId, tasks);
+    this.recalculateEventProgress(eventId);
+
+    if (typeof window !== "undefined") {
+      fetch(`/api/events/${eventId}/tasks?taskId=${taskId}`, {
+        method: 'DELETE',
+      }).catch((err) => console.warn('Backend DB task delete sync:', err));
+    }
   },
 
   // Vendors

@@ -1,104 +1,98 @@
 import { NextRequest, NextResponse } from "next/server";
-import { callGroqChat } from "@/lib/groq";
+import { callAIChat, isAIConfigured } from "@/lib/gemini";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
     const { event, messages, userPrompt } = await req.json();
-    const apiKey = process.env.GROQ_API_KEY;
 
-    if (apiKey) {
-      const systemPrompt = `You are PLANOVA, an expert AI Event Planner & Production Manager.
+    if (!userPrompt || !userPrompt.trim()) {
+      return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+    }
+
+    // Normalize event parameters
+    const title = event?.title || "Your Celebration";
+    const category = event?.category || "celebration";
+    const guests = Number(event?.expected_guests || event?.expectedGuests || 150);
+    const totalBudget = Number(event?.total_budget || event?.totalBudget || 1000000);
+    const currency = event?.currency || "INR";
+    const city = event?.city || "your city";
+    const location = event?.location || "the venue";
+    const date = event?.date || "upcoming";
+    const reservePct = Number(event?.emergency_reserve_percentage || 8);
+    const reserveAmt = Math.round((totalBudget * reservePct) / 100);
+    const isStrict = event?.is_budget_strict ?? true;
+
+    let reply = "";
+
+    if (isAIConfigured()) {
+      const systemPrompt = `You are PLANOVA, a thoughtful, polite, warm, and highly capable wedding & event planning consultant.
 Current Event Context:
-- Title: ${event.title}
-- Category: ${event.category}
-- Date: ${event.date}
-- Location: ${event.location}, ${event.city}
-- Guests: ${event.expectedGuests}
-- Total Budget: ${event.currency} ${event.totalBudget?.toLocaleString()}
-- Strictness: ${event.is_budget_strict ? 'Strict' : 'Flexible'}
-- Reserve: ${event.emergency_reserve_percentage}%
+- Celebration: ${title}
+- Category: ${category}
+- Scheduled Date: ${date}
+- Location: ${location}, ${city}
+- Expected Guests: ${guests}
+- Total Budget: ${currency} ${totalBudget.toLocaleString()} (Strict: ${isStrict ? 'Yes' : 'Flexible'})
+- Safety Contingency Buffer: ${reservePct}% (${currency} ${reserveAmt.toLocaleString()})
 
-Rules:
-1. Provide highly structured, practical, actionable advice.
-2. Respect the budget and guest count strictly.
-3. Identify assumptions and avoid claiming prices are confirmed unless noted as contracted.
-4. If the user asks to add a task, formulate a clear title and priority.
-5. Keep your tone supportive, polished, and professional.`;
+Communication & Tone Guidelines:
+1. Tone: Always be polite, warm, courteous, and speak naturally like a supportive, elegant event planner.
+2. NO robotic, military, or overly corporate jargon. NEVER use stiff phrases like "I am locked in and ready to direct", "Production Baseline", "Financial Metrics Baseline", "planning agenda", or "Executive Overview".
+3. Friendly Greetings: Greet the user warmly and politely (e.g. "Hello! It's a pleasure to assist you with...", "Warm greetings!").
+4. Clear & Readable Formatting: Use neat, friendly bullet points and simple section titles (e.g., "Event Summary", "Budget Overview", "Suggested Next Steps").
+5. Financial Tact: When discussing numbers, be helpful and encouraging (e.g., "Working budget", "Safety reserve set aside", "Approx. per-guest allocation").
+6. Polite Wrap-up: Close by asking how you can help in a friendly, courteous way (e.g., "What area would you like to explore next? Feel free to ask me anything!").
+7. Directly answer whatever the user asks with practical, tasteful, and helpful suggestions.`;
 
-      const groqMessages = [
+      const aiMessages = [
         { role: "system", content: systemPrompt },
-        ...messages.slice(-6).map((m: any) => ({
+        ...(messages || []).slice(-8).map((m: any) => ({
           role: m.role === "user" ? "user" : "assistant",
           content: m.content,
         })),
         { role: "user", content: userPrompt },
       ];
 
-      const reply = await callGroqChat(groqMessages, false);
-
-      // Check for possible action suggestions
-      let actionType: string | undefined;
-      let actionPayload: any;
-
-      if (userPrompt.toLowerCase().includes("task") || userPrompt.toLowerCase().includes("todo")) {
-        actionType = "create_task";
-        actionPayload = {
-          title: "Follow up on " + (userPrompt.slice(0, 30) + "..."),
-          priority: "high",
-        };
-      } else if (userPrompt.toLowerCase().includes("budget") || userPrompt.toLowerCase().includes("save")) {
-        actionType = "update_budget";
+      try {
+        reply = await callAIChat(aiMessages, false);
+      } catch (callErr: any) {
+        console.warn("Assistant call error:", callErr?.message || callErr);
       }
-
-      return NextResponse.json({
-        content: reply,
-        action_type: actionType,
-        action_payload: actionPayload,
-        isMock: false,
-      });
     }
 
-    // Context-rich fallback assistant response
-    let mockContent = `Based on your event **${event.title}** (${event.expectedGuests} guests, ${event.currency} ${event.totalBudget?.toLocaleString()} budget):\n\n`;
-
-    const lower = userPrompt.toLowerCase();
-    if (lower.includes("budget") || lower.includes("cost") || lower.includes("save") || lower.includes("reduce")) {
-      mockContent += `Here is an actionable cost-saving strategy:\n1. **Catering Rationalization**: Transition from 24 extensive buffet options to 4 signature live stations. This reduces preparation surplus by ~15% while enhancing guest engagement.\n2. **Lighting Architecture**: High-efficiency LED pinspots and amber washes transform venue ambiance with 40% less expenditure than complex hanging floral trusses.\n3. **Preserve Reserve**: Keep your ${event.emergency_reserve_percentage || 8}% contingency fund intact for last-minute guest count adjustments.`;
-      return NextResponse.json({
-        content: mockContent,
-        action_type: "update_budget",
-        isMock: true,
-      });
-    } else if (lower.includes("task") || lower.includes("schedule") || lower.includes("deadline")) {
-      mockContent += `Recommended immediate priorities for this week:\n- Finalize stage & audio technician call sheet.\n- Review dietary allergy lists with your catering captain.\n- Send 48-hour RSVP confirmation reminders to pending guests.\n\nWould you like me to add these as tracked items in your Timeline Checklist?`;
-      return NextResponse.json({
-        content: mockContent,
-        action_type: "create_task",
-        action_payload: {
-          title: "Send 48-hour RSVP confirmation reminder to guests",
-          priority: "urgent",
-        },
-        isMock: true,
-      });
-    } else if (lower.includes("vendor") || lower.includes("photographer") || lower.includes("decor")) {
-      mockContent += `When interviewing vendors for ${event.title}, always verify:\n1. Backup equipment guarantees (e.g., dual memory card cameras, backup power generator).\n2. Load-in and teardown timeline allowances with the venue management.\n3. Structured payment schedule (never pay more than 50% upfront before milestones are met).`;
-      return NextResponse.json({
-        content: mockContent,
-        action_type: "suggest_vendor",
-        isMock: true,
-      });
+    if (!reply) {
+      reply = "Something went wrong. Please try again in a moment.";
     }
 
-    mockContent += `I have reviewed your parameters. To achieve an unforgettable experience for your ${event.expectedGuests} guests, we should balance ambient flow with efficient schedule transitions.\n\nWhat specific dimension would you like to refine next? I can help with:\n- Detailed event day minute-by-minute schedule\n- Customized guest invitations & social announcements\n- Budget reallocation between categories\n- Vendor interview questionnaire`;
+    const lower = userPrompt.toLowerCase().trim();
+    let actionType: string | undefined;
+    let actionPayload: any;
+
+    if (lower.includes("task") || lower.includes("todo") || lower.includes("finish") || lower.includes("checklist")) {
+      actionType = "create_task";
+      actionPayload = {
+        title: "Finalize " + (userPrompt.replace(/^(what|can you|please|add)\s*/i, '').slice(0, 45)),
+        priority: "high",
+      };
+    } else if (lower.includes("budget") || lower.includes("save") || lower.includes("reduce")) {
+      actionType = "update_budget";
+    }
 
     return NextResponse.json({
-      content: mockContent,
-      isMock: true,
+      content: reply,
+      action_type: actionType,
+      action_payload: actionPayload,
+      isMock: false,
     });
   } catch (err: any) {
     console.error("Error in assistant API:", err);
-    return NextResponse.json({ error: err.message || "Failed to process chat" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Something went wrong. Please try again.",
+      },
+      { status: 500 }
+    );
   }
 }

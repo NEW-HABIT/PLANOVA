@@ -40,6 +40,20 @@ export type VendorBookingStatus =
   | 'booked'
   | 'declined';
 
+export type SubscriptionTier = 'starter' | 'pro' | 'agency';
+
+export interface UserSubscription {
+  tier: SubscriptionTier;
+  billing_cycle: 'monthly' | 'annual' | 'one_time';
+  status: 'active' | 'trial' | 'canceled' | 'past_due';
+  current_period_end: string;
+  plan_name: string;
+  amount_paid: number;
+  currency: Currency;
+  invoice_id?: string;
+  activated_at: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -50,6 +64,7 @@ export interface UserProfile {
   region: string;
   planning_interests: EventCategory[];
   created_at: string;
+  subscription?: UserSubscription;
 }
 
 export interface EventItem {

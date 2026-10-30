@@ -42,9 +42,10 @@ export default function TimelinePage() {
   useEffect(() => {
     if (eventId) {
       const evt = PlanovaStore.getEventById(eventId);
+      const currentUser = PlanovaStore.getUser();
       if (evt) {
         setEvent(evt);
-        setNewTask((prev) => ({ ...prev, assignee: evt.title ? 'Aarav Sharma' : '' }));
+        setNewTask((prev) => ({ ...prev, assignee: currentUser?.full_name || 'Event Host' }));
       }
       setTasks(PlanovaStore.getTasks(eventId));
     }
@@ -55,18 +56,17 @@ export default function TimelinePage() {
     const updated = PlanovaStore.getTasks(eventId);
     setTasks(updated);
 
-    // Update event completion %
-    if (event && updated.length > 0) {
-      const completedCount = updated.filter((t) => t.is_completed).length;
-      const pct = Math.round((completedCount / updated.length) * 100);
-      PlanovaStore.saveEvent({ ...event, progress_percentage: pct });
-      setEvent({ ...event, progress_percentage: pct });
-    }
+    const updatedEvt = PlanovaStore.getEventById(eventId);
+    if (updatedEvt) setEvent(updatedEvt);
   };
 
   const handleDeleteTask = (taskId: string) => {
     PlanovaStore.deleteTask(eventId, taskId);
-    setTasks(PlanovaStore.getTasks(eventId));
+    const updated = PlanovaStore.getTasks(eventId);
+    setTasks(updated);
+
+    const updatedEvt = PlanovaStore.getEventById(eventId);
+    if (updatedEvt) setEvent(updatedEvt);
   };
 
   const handleCreateTask = (e: React.FormEvent) => {
@@ -77,7 +77,12 @@ export default function TimelinePage() {
       ...newTask,
       is_completed: false,
     });
-    setTasks(PlanovaStore.getTasks(eventId));
+    const updated = PlanovaStore.getTasks(eventId);
+    setTasks(updated);
+
+    const updatedEvt = PlanovaStore.getEventById(eventId);
+    if (updatedEvt) setEvent(updatedEvt);
+
     setShowAddTask(false);
     setNewTask({
       title: '',
@@ -85,7 +90,7 @@ export default function TimelinePage() {
       due_date: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
       priority: 'medium',
       status: 'todo',
-      assignee: event ? 'Aarav Sharma' : '',
+      assignee: PlanovaStore.getUser()?.full_name || 'Event Host',
       category: 'General',
     });
   };
@@ -374,7 +379,7 @@ export default function TimelinePage() {
                     type="text"
                     value={newTask.assignee}
                     onChange={(e) => setNewTask({ ...newTask, assignee: e.target.value })}
-                    placeholder="e.g. Aarav Sharma"
+                    placeholder="e.g. Lead Planner"
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-600"
                   />
                 </div>

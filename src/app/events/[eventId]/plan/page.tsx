@@ -13,10 +13,16 @@ import {
   ShieldAlert,
   CheckCircle2,
   Share2,
+  Copy,
+  Check,
+  DollarSign,
+  Layers,
+  Sparkle,
 } from 'lucide-react';
 import { PlanovaStore } from '@/lib/storage';
 import { EventItem, GeneratedPlan } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import { synthesizeCuratedEventPlan } from '@/lib/gemini';
 
 export default function EventPlanPage() {
   const params = useParams();
@@ -24,8 +30,7 @@ export default function EventPlanPage() {
 
   const [event, setEvent] = useState<EventItem | null>(null);
   const [regeneratingSection, setRegeneratingSection] = useState<string | null>(null);
-
-  // Fallback default plan data matching event specifics
+  const [copiedHex, setCopiedHex] = useState<string | null>(null);
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
 
   useEffect(() => {
@@ -34,165 +39,30 @@ export default function EventPlanPage() {
       if (evt) {
         setEvent(evt);
 
-        // Build contextual plan presentation
-        const reserveAmount = Math.round((evt.total_budget * (evt.emergency_reserve_percentage || 8)) / 100);
-        const operationalBudget = evt.total_budget - reserveAmount;
-
-        setPlan({
-          overview: `An exquisite ${evt.category} designed for ${evt.expected_guests} guests at ${evt.location}, ${evt.city}. Blending seamless hospitality with captivating aesthetics, this event is curated to evoke lasting memories while strictly honoring the ${formatCurrency(evt.total_budget, evt.currency)} budget.`,
-          theme_concept: {
-            title: evt.category === 'wedding' ? 'Royal Rajputana Oasis & Starry Night' : 'Modern Horizon & Ambient Light',
-            description: 'Opulent heritage grandeur blended with understated modern elegance. Deep indigo velvet drapery punctuated by antique brass urns, fragrant marigold garlands, and ambient warm amber uplighting under the open sky.',
-            colors: ['#4338CA', '#7C3AED', '#D97706', '#FDF2F8'],
-            style_keywords: ['Grandeur', 'Warm Ambient', 'High Touch', 'Memorable'],
-          },
-          budget_breakdown: [
-            {
-              category: 'Venue & Staging',
-              percentage: 26,
-              amount: Math.round(operationalBudget * 0.26),
-              rationale: 'Primary halls, lawns, and staged lighting.',
-            },
-            {
-              category: 'Catering & Dining',
-              percentage: 30,
-              amount: Math.round(operationalBudget * 0.30),
-              rationale: 'Multi-course banquet with signature live counters.',
-            },
-            {
-              category: 'Decor & Florals',
-              percentage: 15,
-              amount: Math.round(operationalBudget * 0.15),
-              rationale: 'Stage archways, guest tables, and floral canopy.',
-            },
-            {
-              category: 'Photography & Video',
-              percentage: 12,
-              amount: Math.round(operationalBudget * 0.12),
-              rationale: '4K Cinematography, candid stills, and drone reel.',
-            },
-            {
-              category: 'Emergency Reserve',
-              percentage: evt.emergency_reserve_percentage || 8,
-              amount: reserveAmount,
-              rationale: 'Safeguarded against unforeseen logistics or surges.',
-            },
-          ],
-          milestones: [
-            {
-              title: 'Lock Venue & Booking Clearance',
-              due_week: 'T-6 Weeks',
-              description: 'Confirm electrical loads and timing permits.',
-              priority: 'urgent',
-            },
-            {
-              title: 'Catering Tasting & Signature Menu',
-              due_week: 'T-4 Weeks',
-              description: 'Sample appetizers and finalize dietary choices.',
-              priority: 'high',
-            },
-            {
-              title: 'Invitations & Digital RSVP Dispatch',
-              due_week: 'T-3 Weeks',
-              description: 'Send animated WhatsApp & email cards.',
-              priority: 'high',
-            },
-          ],
-          vendor_selection_criteria: [
-            {
-              category: 'Catering',
-              key_questions: [
-                'Are live chaat items freshly fried on demand?',
-                'Is pure ghee used for traditional sweets?',
-              ],
-              budget_range: `${formatCurrency(operationalBudget * 0.28, evt.currency)} - ${formatCurrency(operationalBudget * 0.32, evt.currency)}`,
-            },
-          ],
-          task_checklist: [
-            {
-              title: 'Confirm stage dimensions with sound engineer',
-              description: 'Ensure 32-channel sound board fits behind console.',
-              priority: 'high',
-              phase: 'Sound & Light',
-            },
-          ],
-          day_schedule: [
-            {
-              time: evt.start_time || '16:00',
-              activity: 'Grand Guest Arrival & Welcome Mocktails',
-              responsibility: 'Hospitality Lead',
-              location_or_notes: 'Welcome Archway',
-            },
-            {
-              time: '18:00',
-              activity: 'Main Ceremonial Program / Keynotes',
-              responsibility: 'Emcee & Stage Manager',
-              location_or_notes: 'Central Stage',
-            },
-            {
-              time: '19:30',
-              activity: 'Royal Feast & Live Musical Performances',
-              responsibility: 'Catering Captain & Band',
-              location_or_notes: 'Dining Pavilion',
-            },
-            {
-              time: evt.end_time || '23:00',
-              activity: 'Dessert Bar, Photographs & Farewell Favors',
-              responsibility: 'Event Host',
-              location_or_notes: 'Photo Zone',
-            },
-          ],
-          menu_suggestions: [
-            {
-              course: 'Welcome Elixirs',
-              items: ['Kesariya Thandai with crushed pistachio', 'Rose Petal Spritzer', 'Cucumber Mint Cooler'],
-              specialty_notes: 'Served in chilled brass goblet glassware.',
-            },
-            {
-              course: 'Live Appetizer Theatres',
-              items: ['Jodhpur Mirchi Vada with mint coulis', 'Paneer Tikka Angara', 'Crispy Corn & Water Chestnut Baskets'],
-              specialty_notes: 'Prepared fresh over live charcoal grills.',
-            },
-            {
-              course: 'The Grand Feast',
-              items: ['Laal Maas (or Jackfruit Dum Curry)', 'Paneer Kundan Kalian', 'Dal Maharani slow-simmered', 'Subz Dum Biryani'],
-              specialty_notes: 'Presented in traditional hammered copper degchis.',
-            },
-            {
-              course: 'Dessert Grandeur',
-              items: ['Baked Malpua with Rabri Cannoli', 'Artisanal Paan Gelato', 'Kesar Jalebi'],
-              specialty_notes: 'Garnished with 24k edible gold leaf.',
-            },
-          ],
-          decor_concepts: [
-            {
-              zone: 'Grand Entrance Gateway',
-              concept: 'Marigold and tuberose canopy with brass lamps and floating candles.',
-              materials: 'Fresh florals, brass urli bowls, warm 2700K fairy lights.',
-            },
-            {
-              zone: 'Stage Backdrop',
-              concept: 'Multi-layer ombré floral arches with vintage mirror jali work.',
-              materials: 'Velvet, blush roses, warm micro-pinspots.',
-            },
-          ],
-          contingencies: [
-            {
-              risk: 'Sudden rain or excessive wind',
-              mitigation: 'Weatherproof high-peak marquee on 1-hour standby from vendor.',
-            },
-            {
-              risk: 'Surge in attendees (+15%)',
-              mitigation: 'Catering reserve plate buffer pre-approved with kitchen head.',
-            },
-          ],
+        // Synthesize dynamic plan for event
+        const defaultPlan = synthesizeCuratedEventPlan({
+          title: evt.title,
+          category: evt.category,
+          date: evt.date,
+          startTime: evt.start_time || '16:00',
+          endTime: evt.end_time || '23:30',
+          location: evt.location,
+          city: evt.city,
+          isIndoor: evt.is_indoor,
+          expectedGuests: evt.expected_guests,
+          totalBudget: evt.total_budget,
+          currency: evt.currency,
+          isBudgetStrict: evt.is_budget_strict,
+          emergencyReservePercentage: evt.emergency_reserve_percentage || 8,
         });
+
+        setPlan(defaultPlan);
       }
     }
   }, [eventId]);
 
   const handleRegenerate = async (sectionName: string) => {
-    if (!plan || !event) return;
+    if (!event || !plan) return;
     setRegeneratingSection(sectionName);
 
     try {
@@ -220,111 +90,168 @@ export default function EventPlanPage() {
     }
   };
 
+  const copyHex = (hex: string) => {
+    navigator.clipboard.writeText(hex);
+    setCopiedHex(hex);
+    setTimeout(() => setCopiedHex(null), 1500);
+  };
+
   const handlePrint = () => {
     window.print();
   };
 
   if (!event || !plan) {
-    return <div className="p-8 text-center text-slate-500">Loading plan...</div>;
+    return (
+      <div className="p-12 text-center text-[#6B5560] flex flex-col items-center justify-center gap-3">
+        <Sparkles className="w-8 h-8 text-[#9E8189] animate-pulse" />
+        <span className="text-xs font-bold uppercase tracking-wider">Loading Production Blueprint...</span>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-8">
       {/* Top action bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-200 gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 border-b border-[#E8D2C4] gap-4">
         <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-indigo-600" />
-            AI Production Blueprint
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#E8D2C4]/70 border border-[#C7A9A3]/60 text-[10px] font-bold text-[#3E3239] mb-1.5 shadow-xs">
+            <Sparkle className="w-3 h-3 text-[#6B5560]" />
+            Personalized Plan
+          </div>
+          <h2 className="text-2xl font-black text-[#3E3239] tracking-tight flex items-center gap-2">
+            Master Celebration Blueprint
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Personalized concepts, schedules, and menus for {event.title}.
+          <p className="text-xs text-[#6B5560] mt-0.5">
+            Personalized concepts, itemized allocations, and run-of-show schedule for {event.title}.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#3E3239] bg-white border border-[#E8D2C4] hover:bg-[#E8D2C4]/30 shadow-xs transition"
           >
-            <Printer className="w-4 h-4 text-slate-500" />
+            <Printer className="w-4 h-4 text-[#9E8189]" />
             <span>Printable Summary</span>
           </button>
         </div>
       </div>
 
       {/* Overview Card */}
-      <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-card">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Executive Summary</h3>
-        <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
+      <div className="p-6 sm:p-8 rounded-3xl bg-white/90 border border-[#E8D2C4] shadow-card backdrop-blur-xl">
+        <span className="text-xs font-extrabold uppercase tracking-wider text-[#9E8189] mb-2 block flex items-center gap-1.5">
+          <Sparkles className="w-4 h-4 text-[#C7A9A3]" /> Executive Director Summary
+        </span>
+        <p className="text-sm sm:text-base text-[#3E3239] leading-relaxed font-normal">
           {plan.overview}
         </p>
       </div>
 
       {/* Theme & Concept */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-50/60 via-violet-50/40 to-white border border-indigo-100 shadow-card relative">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
-            <Palette className="w-4 h-4" /> Theme & Aesthetic Concept
+      <div className="p-6 sm:p-8 rounded-3xl bg-white/90 border border-[#E8D2C4] shadow-card relative backdrop-blur-xl space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#9E8189] flex items-center gap-1.5">
+            <Palette className="w-4 h-4 text-[#C7A9A3]" /> Theme & Visual Identity
           </span>
           <button
             onClick={() => handleRegenerate('theme_concept')}
             disabled={regeneratingSection === 'theme_concept'}
-            className="text-xs font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-100/60"
+            className="text-xs font-bold text-[#3E3239] hover:text-[#6B5560] flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#E8D2C4]/50 border border-[#C7A9A3]/50 transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${regeneratingSection === 'theme_concept' ? 'animate-spin' : ''}`} />
             Regenerate Theme
           </button>
         </div>
 
-        <h3 className="text-xl font-black text-slate-900">{plan.theme_concept.title}</h3>
-        <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+        <h3 className="text-xl sm:text-2xl font-black text-[#3E3239]">{plan.theme_concept.title}</h3>
+        <p className="text-xs sm:text-sm text-[#6B5560] leading-relaxed font-normal">
           {plan.theme_concept.description}
         </p>
 
-        <div className="mt-5 pt-5 border-t border-indigo-100 flex flex-wrap items-center gap-4">
-          <span className="text-xs font-bold text-slate-500">Color Palette:</span>
+        <div className="pt-3 border-t border-[#E8D2C4] flex flex-wrap items-center gap-3">
+          <span className="text-xs font-bold text-[#3E3239]">Palette:</span>
           {plan.theme_concept.colors.map((c, i) => (
-            <div key={i} className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg shadow-sm border border-slate-200" style={{ backgroundColor: c }} />
-              <span className="text-xs font-mono text-slate-600">{c}</span>
+            <div
+              key={i}
+              onClick={() => copyHex(c)}
+              className="flex items-center gap-2 p-1.5 pr-2.5 rounded-xl border border-[#E8D2C4] bg-[#F7EFE7]/60 hover:bg-[#E8D2C4]/50 transition cursor-pointer"
+              title="Click to copy hex"
+            >
+              <div className="w-5 h-5 rounded-lg shadow-xs border border-black/10" style={{ backgroundColor: c }} />
+              <span className="text-xs font-mono font-bold text-[#3E3239]">{c}</span>
+              {copiedHex === c ? (
+                <Check className="w-3 h-3 text-emerald-600" />
+              ) : (
+                <Copy className="w-3 h-3 text-[#9E8189] opacity-40" />
+              )}
             </div>
           ))}
         </div>
       </div>
 
+      {/* Target Budget Breakdown */}
+      {plan.budget_breakdown && (
+        <div className="p-6 sm:p-8 rounded-3xl bg-white/90 border border-[#E8D2C4] shadow-card backdrop-blur-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#9E8189] flex items-center gap-1.5">
+              <DollarSign className="w-4 h-4 text-[#C7A9A3]" /> Target Budget Allocations
+            </span>
+            <span className="text-xs font-black text-[#3E3239]">
+              Total Budget: {formatCurrency(event.total_budget, event.currency)}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+            {plan.budget_breakdown.map((b, i) => (
+              <div key={i} className="p-4 rounded-2xl bg-[#F7EFE7]/60 border border-[#E8D2C4] space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-[#3E3239]">{b.category}</span>
+                  <span className="font-black text-[#3E3239]">
+                    {formatCurrency(b.amount, event.currency)} ({b.percentage}%)
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-[#E8D2C4]/60 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-[#3E3239] to-[#6B5560] rounded-full" style={{ width: `${b.percentage}%` }} />
+                </div>
+                <span className="text-[11px] text-[#6B5560] block font-normal leading-relaxed">{b.rationale}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Day-of Schedule */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-card">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-violet-600" /> Minute-By-Minute Day Schedule
+      <div className="p-6 sm:p-8 rounded-3xl bg-white/90 border border-[#E8D2C4] shadow-card backdrop-blur-xl space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#9E8189] flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-[#C7A9A3]" /> Minute-By-Minute Run of Show
           </span>
           <button
             onClick={() => handleRegenerate('day_schedule')}
             disabled={regeneratingSection === 'day_schedule'}
-            className="text-xs font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100"
+            className="text-xs font-bold text-[#3E3239] hover:text-[#6B5560] flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#E8D2C4]/50 border border-[#C7A9A3]/50 transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${regeneratingSection === 'day_schedule' ? 'animate-spin' : ''}`} />
             Regenerate Schedule
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {plan.day_schedule.map((slot, idx) => (
             <div
               key={idx}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 transition gap-2"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl bg-[#F7EFE7]/60 border border-[#E8D2C4] hover:bg-[#E8D2C4]/40 transition gap-2"
             >
               <div className="flex items-start sm:items-center gap-3">
-                <span className="px-2.5 py-1 rounded-lg bg-indigo-700 text-white font-mono text-xs font-bold">
+                <span className="px-3 py-1 rounded-xl bg-[#3E3239] text-[#F7EFE7] font-mono text-xs font-bold shrink-0">
                   {slot.time}
                 </span>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{slot.activity}</h4>
-                  <span className="text-xs text-slate-500">{slot.location_or_notes}</span>
+                  <h4 className="text-sm font-bold text-[#3E3239]">{slot.activity}</h4>
+                  <span className="text-xs text-[#6B5560]">{slot.location_or_notes}</span>
                 </div>
               </div>
-              <span className="text-xs font-semibold text-slate-600 px-2.5 py-0.5 rounded-full bg-slate-200/80 w-fit">
+              <span className="text-xs font-bold text-[#6B5560] px-3 py-1 rounded-xl bg-white border border-[#E8D2C4] w-fit shrink-0">
                 {slot.responsibility}
               </span>
             </div>
@@ -333,15 +260,15 @@ export default function EventPlanPage() {
       </div>
 
       {/* Gourmet Menu */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-card">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-            <ChefHat className="w-4 h-4 text-amber-600" /> Curated Dining Menu
+      <div className="p-6 sm:p-8 rounded-3xl bg-white/90 border border-[#E8D2C4] shadow-card backdrop-blur-xl space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#9E8189] flex items-center gap-1.5">
+            <ChefHat className="w-4 h-4 text-[#C7A9A3]" /> Curated Gourmet Banquet
           </span>
           <button
             onClick={() => handleRegenerate('menu_suggestions')}
             disabled={regeneratingSection === 'menu_suggestions'}
-            className="text-xs font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100"
+            className="text-xs font-bold text-[#3E3239] hover:text-[#6B5560] flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#E8D2C4]/50 border border-[#C7A9A3]/50 transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${regeneratingSection === 'menu_suggestions' ? 'animate-spin' : ''}`} />
             Regenerate Menu
@@ -350,38 +277,40 @@ export default function EventPlanPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {plan.menu_suggestions.map((m, idx) => (
-            <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-800 block">
+            <div key={idx} className="p-5 rounded-2xl bg-[#F7EFE7]/60 border border-[#E8D2C4] space-y-2">
+              <span className="text-xs font-black uppercase tracking-wider text-[#3E3239] block">
                 {m.course}
               </span>
-              <ul className="space-y-1 text-xs sm:text-sm text-slate-700">
+              <ul className="space-y-1 text-xs text-[#6B5560]">
                 {m.items.map((item, i) => (
                   <li key={i} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#9E8189]"></span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-              <p className="text-[11px] text-amber-800 font-medium pt-1 italic">
-                Note: {m.specialty_notes}
-              </p>
+              {m.specialty_notes && (
+                <p className="text-[11px] text-[#6B5560] font-medium pt-1 italic border-t border-[#E8D2C4]">
+                  Note: {m.specialty_notes}
+                </p>
+              )}
             </div>
           ))}
         </div>
       </div>
 
       {/* Contingencies & Risk Mitigation */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-amber-50/50 border border-amber-200/70 shadow-card">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5 mb-4">
-          <ShieldAlert className="w-4 h-4 text-amber-600" /> Contingency & Risk Safeguards
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#F7EFE7]/80 border border-[#C7A9A3]/60 shadow-card backdrop-blur-xl space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-[#3E3239] flex items-center gap-1.5">
+          <ShieldAlert className="w-4 h-4 text-[#9E8189]" /> Contingency & Risk Mitigation Matrix
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {plan.contingencies.map((c, idx) => (
-            <div key={idx} className="p-4 rounded-2xl bg-white border border-amber-100 shadow-sm space-y-1.5">
-              <span className="text-xs font-bold text-slate-900 block">Risk: {c.risk}</span>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                <span className="font-semibold text-emerald-700">Mitigation:</span> {c.mitigation}
+            <div key={idx} className="p-5 rounded-2xl bg-white border border-[#E8D2C4] shadow-xs space-y-1.5">
+              <span className="text-xs font-bold text-[#3E3239] block">Risk: {c.risk}</span>
+              <p className="text-xs text-[#6B5560] leading-relaxed">
+                <span className="font-bold text-[#3E3239]">Mitigation:</span> {c.mitigation}
               </p>
             </div>
           ))}

@@ -10,7 +10,7 @@ This guide provides a step-by-step, turnkey plan to host **PLANOVA** in a fully 
 | :--- | :--- | :--- | :--- |
 | **Web Frontend & API Routes** | **Vercel** | Hobby (Free) or Pro ($20/mo) | Native Next.js 14 App Router support, Global Edge CDN, automated CI/CD from `main`, automatic SSL. |
 | **Database & Auth** | **Supabase** | Free or Pro ($25/mo) | Fully managed PostgreSQL, Row Level Security (RLS), instant Auth, daily backups, global connection pooling (PgBouncer). |
-| **AI Inference Engine** | **Groq Cloud** | Developer (Free tier) or Pay-as-you-go | Ultra-fast token generation for Llama 3.3 70B (~300 tokens/sec), sub-second plan generation. |
+| **AI Inference Engine** | **Hugging Face** | Free Serverless or Dedicated | OpenAI-compatible inference with state-of-the-art open models (Llama 3.3 70B, Qwen 2.5 72B, Mistral). |
 | **DNS & Custom Domain** | **Vercel DNS** / **Cloudflare** | Free | Instant SSL, DDoS protection, edge caching. |
 
 ---
@@ -51,13 +51,14 @@ Navigate to **Project Settings** → **API**:
 
 ---
 
-## ⚡ Phase 2: AI Engine Setup (Groq Cloud)
+## ⚡ Phase 2: AI Engine Setup (Hugging Face)
 
-1. Go to [https://console.groq.com/keys](https://console.groq.com/keys).
-2. Sign in or create a free account.
-3. Click **"Create API Key"**.
-4. Name the key (e.g., `planova-production-key`) and click **"Submit"**.
-5. Copy the generated key (starts with `gsk_...`).
+1. Go to [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
+2. Sign in or create a free Hugging Face account.
+3. Click **"New token"** (or **"Create new token"**).
+4. Name the token (e.g., `planova-production-token`), select **"Read"** role, and click **"Generate a token"**.
+5. Copy the generated key (starts with `hf_...`).
+6. *(Optional)* If using Meta Llama models like `meta-llama/Llama-3.3-70B-Instruct`, ensure you click "Agree and access repository" on the Hugging Face model page once, or use non-gated models like `Qwen/Qwen2.5-72B-Instruct` out-of-the-box.
 
 ---
 
@@ -77,15 +78,16 @@ Vercel automatically detects Next.js:
 - **Install Command**: `npm install` (default)
 
 ### 3. Set Production Environment Variables
-In the **"Environment Variables"** section, add the following 5 keys:
+In the **"Environment Variables"** section, add the following keys:
 
 | Name | Value | Description |
 | :--- | :--- | :--- |
-| `GROQ_API_KEY` | `gsk_your_actual_groq_key` | Production AI generation key |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` | High-accuracy structured event model |
+| `HUGGINGFACE_API_KEY` | `hf_your_actual_token` | Hugging Face Access Token |
+| `HUGGINGFACE_MODEL` | `meta-llama/Llama-3.3-70B-Instruct` | Target LLM (or `Qwen/Qwen2.5-72B-Instruct`) |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://xyz.supabase.co` | Supabase project endpoint |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...` | Supabase client anon public key |
 | `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGciOi...` | Supabase server-side admin key |
+| `GROQ_API_KEY` *(Optional)* | `gsk_...` | Optional secondary fallback AI provider |
 
 ### 4. Deploy
 1. Click **"Deploy"**.
