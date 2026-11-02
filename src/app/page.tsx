@@ -322,6 +322,7 @@ export default function LandingPage() {
                     }
                     className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#3E3239]/70 text-[#F7EFE7] hover:bg-[#3E3239] active:scale-95 transition backdrop-blur-sm z-10"
                     title="Previous Photo"
+                    aria-label="Previous Photo"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -333,6 +334,7 @@ export default function LandingPage() {
                     }
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[#3E3239]/70 text-[#F7EFE7] hover:bg-[#3E3239] active:scale-95 transition backdrop-blur-sm z-10"
                     title="Next Photo"
+                    aria-label="Next Photo"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -352,13 +354,14 @@ export default function LandingPage() {
                   <button
                     key={i}
                     onClick={() => setActivePhotoIdx(i)}
+                    aria-label={`View photo ${i + 1} of ${activeModalWork.title}`}
                     className={`relative w-16 h-12 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
                       activePhotoIdx === i
                         ? 'border-[#3E3239] scale-105 shadow-md ring-2 ring-[#C7A9A3]'
                         : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <Image src={img} alt="Thumbnail" fill className="object-cover" />
+                    <Image src={img} alt={`${activeModalWork.title} gallery preview ${i + 1}`} fill className="object-cover" />
                   </button>
                 ))}
               </div>

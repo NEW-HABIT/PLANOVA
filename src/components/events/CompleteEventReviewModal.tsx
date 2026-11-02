@@ -190,6 +190,7 @@ export default function CompleteEventReviewModal({
           <button
             onClick={onClose}
             className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>

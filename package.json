@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node scripts/test-budget.js"
+    "test": "node scripts/run-all-tests.js",
+    "test:unit": "node tests/unit/utils.test.js && node tests/unit/budget-engine.test.js && node tests/unit/schemas.test.js && node tests/unit/auth-security.test.js && node tests/unit/server-db.test.js",
+    "test:integration": "node tests/integration/api-contracts.test.js",
+    "test:a11y": "node tests/accessibility.test.js",
+    "test:budget": "node scripts/test-budget.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.1",

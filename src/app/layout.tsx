@@ -41,8 +41,16 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-col min-h-screen bg-[#FAFAFF] text-[#17172A] antialiased selection:bg-violet-200 selection:text-indigo-900">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#3E3239] focus:text-[#F7EFE7] focus:shadow-xl focus:rounded-xl focus:font-bold focus:outline-none focus:ring-2 focus:ring-[#C7A9A3] transition-all"
+        >
+          Skip to main content
+        </a>
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1" tabIndex={-1}>
+          {children}
+        </main>
         <Footer />
         <CookieConsent />
       </body>
